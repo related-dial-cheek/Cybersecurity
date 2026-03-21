@@ -465,7 +465,7 @@ en:[
 // Scoring: 4=correct 3=good 2=regular 1=bad (but we only care about correct answer index)
 const SCORING = {4:4, 3:3, 2:2, 1:1};
 const STORAGE_KEY = 'cyberpost_results';
-const API_ENDPOINT = '/api/save';
+const API_ENDPOINT = 'https://ciberseguridad-func.azurewebsites.net/api/saveresult';
 
 async function sendToServer(payload) {
   try {

@@ -1164,7 +1164,7 @@ let attemptIdx = 0;    // 0-2 (max 3 attempts per subtopic)
 let subtopicResults2 = [[null,null,null,null],[null,null,null,null]];
 
 const STORAGE_KEY = 'cyberad_results';
-const API_ENDPOINT = '/api/save';
+const API_ENDPOINT = 'https://ciberseguridad-func.azurewebsites.net/api/saveresult';
 
 async function sendToServer(payload) {
   try {
