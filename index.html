@@ -1,0 +1,1625 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ciberseguridad Personal — Aprendizaje Adaptativo</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0f1117;--surface:#181c27;--surface2:#1f2535;
+  --border:#2a3044;--border2:#363f58;
+  --text:#e8eaf2;--text2:#8b93ad;--text3:#555f7a;
+  --accent:#4f7cff;--accent2:#7b9fff;
+  --green:#34c97a;--green2:#1a7a48;--gbg:#0d2e1d;
+  --orange:#f59e0b;--obg:#2a1e00;
+  --red:#f04757;--rbg:#2a0f12;
+  --purple:#a78bfa;--pbg:#1e1535;
+  --r:14px;--rs:8px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{scroll-behavior:auto}
+body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
+.app{max-width:720px;margin:0 auto;padding:0 20px 80px}
+
+/* HEADER */
+.hdr{padding:36px 0 28px;border-bottom:1px solid var(--border);margin-bottom:32px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+.hdr-tag{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--accent2);background:rgba(79,124,255,.12);border:1px solid rgba(79,124,255,.25);border-radius:20px;padding:4px 12px;margin-bottom:12px}
+.hdr h1{font-size:26px;font-weight:600;letter-spacing:-.02em;line-height:1.2;margin-bottom:6px}
+.hdr h1 span{color:var(--accent2)}
+.hdr p{font-size:13px;color:var(--text2);max-width:440px;line-height:1.65}
+.lang-tog{display:flex;gap:4px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:4px;flex-shrink:0}
+.lbtn{padding:5px 13px;border-radius:7px;border:none;background:transparent;color:var(--text2);font-family:'Sora',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s}
+.lbtn.active{background:var(--accent);color:#fff}
+
+/* DOMAIN TRACK */
+.dtrack{display:flex;gap:8px;margin-bottom:28px}
+.dtrack-item{flex:1;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);cursor:pointer;transition:all .2s;opacity:.5}
+.dtrack-item.active{opacity:1;border-color:var(--accent);background:rgba(79,124,255,.08)}
+.dtrack-item.done{opacity:.75;border-color:var(--green2)}
+.dtrack-icon{font-size:20px;margin-bottom:4px}
+.dtrack-name{font-size:12px;font-weight:500;color:var(--text2)}
+.dtrack-item.active .dtrack-name{color:var(--accent2)}
+.dtrack-item.done .dtrack-name{color:var(--green)}
+
+/* SUBTOPIC PROGRESS */
+.stprog{display:flex;gap:6px;margin-bottom:24px;align-items:center}
+.stpip{width:32px;height:4px;border-radius:2px;background:var(--border2);transition:all .3s;flex-shrink:0}
+.stpip.done-good{background:var(--green)}
+.stpip.done-ok{background:var(--orange)}
+.stpip.done-weak{background:var(--red)}
+.stpip.active{background:var(--accent);animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.stlabel{font-size:12px;color:var(--text3);margin-left:4px}
+
+/* ATTEMPT DOTS */
+.attempt-row{display:flex;align-items:center;gap:8px;margin-bottom:16px}
+.adot{width:8px;height:8px;border-radius:50%;background:var(--border2);transition:all .25s}
+.adot.used-good{background:var(--green)}
+.adot.used-ok{background:var(--orange)}
+.adot.used-bad{background:var(--red)}
+.adot.current{background:var(--accent);box-shadow:0 0 0 3px rgba(79,124,255,.25)}
+.alabel{font-size:12px;color:var(--text3)}
+
+/* CONTEXT CHIP */
+.ctx-chip{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:500;padding:4px 10px;border-radius:20px;margin-bottom:14px}
+.ctx-first{background:rgba(79,124,255,.1);border:1px solid rgba(79,124,255,.2);color:var(--accent2)}
+.ctx-retry{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);color:var(--orange)}
+.ctx-final{background:rgba(240,71,87,.1);border:1px solid rgba(240,71,87,.2);color:var(--red)}
+.ctx-harder{background:rgba(52,201,122,.1);border:1px solid rgba(52,201,122,.2);color:var(--green)}
+
+/* SCENARIO CARD */
+.sc-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:16px;animation:slideIn .3s ease}
+@keyframes slideIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.sc-head{padding:18px 20px 14px;border-bottom:1px solid var(--border);display:flex;gap:12px;align-items:flex-start}
+.sc-subtag{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:500;color:var(--accent2);background:rgba(79,124,255,.1);border-radius:5px;padding:2px 7px;flex-shrink:0;margin-top:3px}
+.sc-title{font-size:14px;font-weight:500;line-height:1.5}
+.sc-ctx{padding:12px 20px;font-size:13px;color:var(--text2);line-height:1.6;border-bottom:1px solid var(--border);font-style:italic}
+
+/* OPTIONS */
+.opts-wrap{padding:14px 20px 18px;display:flex;flex-direction:column;gap:7px}
+.opt{display:flex;gap:10px;align-items:flex-start;padding:11px 13px;border:1px solid var(--border);border-radius:var(--rs);cursor:pointer;transition:all .18s;background:var(--surface2)}
+.opt:hover{border-color:var(--border2);background:#242a3a}
+.opt.sel-good{border-color:var(--green);background:var(--gbg);pointer-events:none}
+.opt.sel-ok{border-color:var(--orange);background:var(--obg);pointer-events:none}
+.opt.sel-bad{border-color:var(--red);background:var(--rbg);pointer-events:none}
+.opt.best-show{border-color:var(--green);background:var(--gbg);opacity:.6;pointer-events:none}
+.opt.locked{pointer-events:none}
+.opt-letter{width:22px;height:22px;border-radius:5px;border:1.5px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:var(--text3);flex-shrink:0;margin-top:1px;font-family:'JetBrains Mono',monospace;transition:all .18s}
+.opt.sel-good .opt-letter{background:var(--green);border-color:var(--green);color:#fff}
+.opt.sel-ok .opt-letter{background:var(--orange);border-color:var(--orange);color:#000}
+.opt.sel-bad .opt-letter{background:var(--red);border-color:var(--red);color:#fff}
+.opt.best-show .opt-letter{background:rgba(52,201,122,.25);border-color:var(--green);color:var(--green)}
+.opt-text{font-size:13px;line-height:1.45;color:var(--text2);flex:1}
+.opt.sel-good .opt-text,.opt.sel-ok .opt-text,.opt.sel-bad .opt-text{color:var(--text)}
+
+/* FEEDBACK */
+.fb{margin:0 20px 18px;border-radius:var(--rs);padding:12px 15px;font-size:13px;line-height:1.6;display:none;animation:slideIn .25s ease}
+.fb.show{display:block}
+.fb-good{background:var(--gbg);border:1px solid var(--green2);color:#7de8a8}
+.fb-ok{background:var(--obg);border:1px solid #7a4e00;color:#fbd07c}
+.fb-bad{background:var(--rbg);border:1px solid #7a1e28;color:#f9a3ab}
+.fb strong{font-weight:600;display:block;margin-bottom:3px}
+.fb p{color:inherit;opacity:.9;font-size:12.5px}
+.tip{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:500;background:rgba(79,124,255,.12);border:1px solid rgba(79,124,255,.25);border-radius:20px;padding:3px 10px;color:var(--accent2);margin-top:8px}
+
+/* CONTINUE BTN */
+.cont-btn{display:none;margin:0 20px 20px;width:calc(100% - 40px)}
+.cont-btn.show{display:block}
+
+/* SCREENS */
+.screen{display:none}
+.screen.active{display:block}
+
+/* WELCOME */
+.welcome-title{font-size:22px;font-weight:600;margin-bottom:8px;letter-spacing:-.02em}
+.welcome-sub{font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:22px}
+.how-it-works{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;margin-bottom:24px}
+.how-it-works h3{font-size:13px;font-weight:600;margin-bottom:12px;color:var(--accent2)}
+.how-row{display:flex;gap:12px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--border)}
+.how-row:last-child{border:none;padding-bottom:0}
+.how-icon{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text3);flex-shrink:0;margin-top:2px;width:22px;text-align:left}
+.how-text{font-size:13px;color:var(--text2);line-height:1.5}
+.how-text strong{color:var(--text);font-weight:500}
+.dom-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px}
+.dom-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px}
+.dom-card-icon{font-size:20px;margin-bottom:8px}
+.dom-card-name{font-size:13px;font-weight:500;margin-bottom:3px}
+.dom-card-meta{font-size:12px;color:var(--text3)}
+
+/* RESULTS */
+.result-section{margin-bottom:28px}
+.result-section h3{font-size:15px;font-weight:600;margin-bottom:14px;color:var(--text)}
+.st-result{display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid var(--border)}
+.st-result:last-child{border:none}
+.st-icon{font-size:18px;flex-shrink:0;width:28px;text-align:center}
+.st-info{flex:1}
+.st-name{font-size:13px;font-weight:500;margin-bottom:2px}
+.st-attempts{font-size:12px;color:var(--text3)}
+.st-badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;letter-spacing:.04em;flex-shrink:0}
+.badge-optimal{background:rgba(52,201,122,.15);color:var(--green);border:1px solid var(--green2)}
+.badge-good{background:rgba(245,158,11,.15);color:var(--orange);border:1px solid #7a4e00}
+.badge-developing{background:rgba(240,71,87,.15);color:var(--red);border:1px solid #7a1e28}
+
+.rec-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);padding:14px 16px;margin-bottom:10px}
+.rec-card h4{font-size:13px;font-weight:500;margin-bottom:6px;color:var(--text)}
+.rec-card p{font-size:12.5px;color:var(--text2);line-height:1.55}
+
+/* SAVE BANNER */
+.save-banner{background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:20px}
+.save-banner p{font-size:13px;color:var(--text2)}
+.save-banner p strong{color:var(--text)}
+.save-actions{display:flex;gap:8px;flex-wrap:wrap}
+.results-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;margin-top:16px}
+.results-panel h3{font-size:14px;font-weight:600;margin-bottom:12px}
+.re{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:12.5px;gap:12px;flex-wrap:wrap}
+.re:last-child{border:none}
+.re-meta{color:var(--text2)}.re-score{font-family:'JetBrains Mono',monospace;font-weight:500}
+
+/* BTNS */
+.btn{padding:10px 22px;border-radius:10px;border:1px solid var(--border2);background:transparent;color:var(--text2);font-family:'Sora',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:all .18s}
+.btn:hover{background:var(--surface2);color:var(--text)}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn-primary:hover{background:#6690ff;border-color:#6690ff;color:#fff}
+.btn-sm{padding:7px 16px;font-size:12.5px;border-radius:8px}
+.btn-ghost{border-color:transparent;color:var(--text3)}
+.btn-ghost:hover{color:var(--text2);background:transparent}
+.btn-full{width:100%;text-align:center}
+
+.completion-big{text-align:center;padding:40px 0 24px}
+.completion-big .ci{font-size:48px;margin-bottom:14px}
+.completion-big h2{font-size:22px;font-weight:600;letter-spacing:-.02em;margin-bottom:8px}
+.completion-big p{font-size:14px;color:var(--text2);max-width:360px;margin:0 auto 24px;line-height:1.65}
+
+@media(max-width:520px){
+  .hdr{flex-direction:column}
+  .hdr h1{font-size:21px}
+  .dtrack{flex-direction:column}
+  .dtrack-item{display:flex;align-items:center;gap:10px}
+  .dtrack-icon{margin-bottom:0}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="hdr">
+    <div>
+      <div class="hdr-tag">⚡ <span id="hd-tag"></span></div>
+      <h1 id="hd-title"></h1>
+      <p id="hd-sub"></p>
+    </div>
+    <div class="lang-tog">
+      <button class="lbtn active" onclick="setLang('es')">ES</button>
+      <button class="lbtn" onclick="setLang('en')">EN</button>
+    </div>
+  </div>
+
+  <!-- WELCOME -->
+  <div class="screen active" id="scr-welcome">
+    <div class="dom-cards" id="w-dom-cards"></div>
+    <div class="how-it-works">
+      <h3 id="w-how-title"></h3>
+      <div id="w-how-rows"></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:14px;margin-top:4px">
+      <button class="btn btn-primary" onclick="startTool()" id="w-start"></button>
+      <span id="w-duration" style="font-size:13px;color:var(--text3)"></span>
+    </div>
+  </div>
+
+  <!-- LEARNING -->
+  <div class="screen" id="scr-learn">
+    <div class="dtrack" id="dtrack"></div>
+    <div class="stprog" id="stprog"></div>
+    <div class="attempt-row" id="attempt-row"></div>
+    <div id="ctx-chip-wrap"></div>
+    <div id="sc-wrap"></div>
+    <button class="btn btn-primary btn-full cont-btn" id="cont-btn" onclick="continueFlow()"></button>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="screen" id="scr-results">
+    <div class="completion-big">
+      <div class="ci">🎯</div>
+      <h2 id="r-title"></h2>
+      <p id="r-sub"></p>
+      <button class="btn btn-primary" onclick="restart()" id="r-restart"></button>
+    </div>
+    <div id="r-domains"></div>
+    <div id="r-recs"></div>
+    <div id="save-wrap"></div>
+    <div id="hist-wrap"></div>
+  </div>
+
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// CONTENT
+// ═══════════════════════════════════════════════════════
+const TX = {
+es:{
+  tag:'Aprendizaje Adaptativo',
+  title:'Ciberseguridad <span>Personal</span>',
+  sub:'Esta herramienta presenta situaciones cotidianas sobre contraseñas y respaldos — los dos temas que una investigación aplicada identificó como los de mayor impacto en la seguridad digital personal. No hay respuestas únicas; el objetivo es reflexionar sobre las decisiones que tomamos en nuestra vida digital.',
+  wTitle:'Cómo funciona',
+  wSub:'Dos módulos, cuatro sub-temas cada uno.',
+  wStart:'Comenzar',
+  howTitle:'Estructura de la herramienta:',
+  howRows:[
+    {icon:'01',text:'Se presenta una situación cotidiana y cuatro posibles respuestas.'},
+    {icon:'02',text:'Cada respuesta incluye una explicación del razonamiento detrás de ella.'},
+    {icon:'03',text:'La siguiente situación se selecciona según la respuesta elegida — el recorrido es personal y puede variar.'},
+    {icon:'04',text:'Al finalizar se presenta un perfil de resultado por sub-tema con orientación personalizada.'},
+  ],
+  domains:['Contraseñas y Autenticación','Respaldos y Archivos'],
+  domainIcons:['🔑','💾'],
+  subtopics:[
+    ['Creación y reutilización','Segundo factor (2FA)','Códigos de recuperación','Reconocer intentos de robo'],
+    ['Dónde guardar archivos','Verificar respaldos','Respuesta ante ransomware','Compartir documentos'],
+  ],
+  ctxLabels:{first:'Situación 1 de 3',retry:'Situación {n} de 3',final:'Situación 3 de 3',harder:'Variante adicional'},
+  contBtn:'Continuar →',
+  badges:{optimal:'Óptimo',good:'Bueno',developing:'En desarrollo'},
+  badgeDesc:{optimal:'Abordaste el sub-tema con solidez.',good:'Alcanzaste la respuesta más segura tras una situación de refuerzo.',developing:'Este sub-tema se identificó como área de oportunidad.'},
+  rTitle:'Módulos completados',
+  rSub:'Aquí está tu perfil de resultado por sub-tema.',
+  rRestart:'Volver a empezar',
+  rDomainLabel:'Resultado por sub-tema',
+  rRecTitle:'Dónde enfocarte',
+  rRecSub:'Solo para los sub-temas donde hubo más dificultad:',
+  saveLabel:'Guardar resultados',saveDesc:'Solo en este dispositivo.',
+  savedOk:'✓ Guardado',downloadLabel:'Descargar JSON',clearLabel:'Borrar historial',
+  histTitle:'Historial en este dispositivo',
+  attemptLabel:'Situación',
+  noAttempts:'',
+},
+en:{
+  tag:'Adaptive Learning',
+  title:'Personal <span>Cybersecurity</span>',
+  sub:'This tool presents everyday situations on passwords and backups — the two topics that an applied research study identified as having the greatest impact on personal digital security. There are no single correct answers; the goal is to reflect on the decisions we make in our digital lives.',
+  wTitle:'How it works',
+  wSub:'Two modules, four sub-topics each.',
+  wStart:'Start',
+  howTitle:'Structure of the tool:',
+  howRows:[
+    {icon:'01',text:'A real-life situation is presented along with four possible responses.'},
+    {icon:'02',text:'Each response includes an explanation of the reasoning behind it.'},
+    {icon:'03',text:'The next situation is selected based on the chosen response — the path is personal and may vary.'},
+    {icon:'04',text:'At the end, a result profile is shown by sub-topic with personalized guidance.'},
+  ],
+  domains:['Passwords & Authentication','Backups & Files'],
+  domainIcons:['🔑','💾'],
+  subtopics:[
+    ['Creation & reuse','Second factor (2FA)','Recovery codes','Recognizing theft attempts'],
+    ['Where to store files','Verifying backups','Ransomware response','Sharing documents'],
+  ],
+  ctxLabels:{first:'Situation 1 of 3',retry:'Situation {n} of 3',final:'Situation 3 of 3',harder:'Additional variant'},
+  contBtn:'Continue →',
+  badges:{optimal:'Optimal',good:'Good',developing:'Developing'},
+  badgeDesc:{optimal:'You approached this sub-topic with confidence.',good:'You reached the most secure response after one reinforcement situation.',developing:'This sub-topic was identified as an opportunity area.'},
+  rTitle:'Modules completed',
+  rSub:'Here is your result profile by sub-topic.',
+  rRestart:'Start over',
+  rDomainLabel:'Result by sub-topic',
+  rRecTitle:'Where to focus',
+  rRecSub:'Only for the sub-topics where you had more difficulty:',
+  saveLabel:'Save results',saveDesc:'Stored only on this device.',
+  savedOk:'✓ Saved',downloadLabel:'Download JSON',clearLabel:'Clear history',
+  histTitle:'History on this device',
+  attemptLabel:'Situation',
+  noAttempts:'',
+},
+};
+
+// ═══════════════════════════════════════════════════════
+// QUESTION BANK
+// Each question: { title, ctx, opts:[{t,s}], fb:[{cls,head,body,tip}] }
+// s: 4=correct 3=good 2=regular 1=bad
+// Each subtopic has 3 questions: [initial, retry/easier, harder/final]
+// ═══════════════════════════════════════════════════════
+const QB = {
+es:[
+  // DOMAIN 0 — Contraseñas
+  [
+    // SUBTOPIC 0.0 — Creación y reutilización
+    [
+      { // Q0: initial
+        title:'Llevas años usando la misma contraseña en tu correo, banco y redes sociales porque es fácil de recordar.',
+        ctx:'Un servicio que usas anuncia que sufrió una filtración. Tu contraseña estaba en la base de datos expuesta.',
+        opts:[
+          {t:'Cambio solo la contraseña del servicio que fue filtrado.',s:2},
+          {t:'Cambio la contraseña en todos los servicios donde la usé y activo verificación adicional.',s:4},
+          {t:'Espero a ver si me avisan que mi cuenta fue afectada.',s:1},
+          {t:'Cambio en el correo y el banco, pero dejo las redes sociales.',s:3},
+        ],
+        fb:[
+          {cls:'fb-ok',head:'Parcialmente correcto.',body:'Cambiaste el más obvio, pero el atacante ya tiene esa contraseña y la puede probar en todos los servicios donde la usas. Una filtración expone todos los lugares donde reutilizaste la misma clave.',tip:'Regla práctica: si reutilizaste una contraseña, trátala como comprometida en todos los sitios donde esté.'},
+          {cls:'fb-good',head:'Exactamente lo correcto.',body:'Una contraseña filtrada está comprometida en todos los servicios que la usan. Cambiar en todos y activar el segundo factor cierra el riesgo completo. El atacante ya tiene esa clave — cuanto antes la reemplaces en todos lados, mejor.',tip:'Un gestor de contraseñas genera claves únicas por servicio y las recuerda por ti — no tendrías este problema.'},
+          {cls:'fb-bad',head:'Esperar tiene un costo.',body:'Cada hora que pasa con esa contraseña activa es tiempo que el atacante puede usarla. No esperes confirmación personal — si el servicio anunció filtración, tu contraseña ya está expuesta.',tip:'Ante cualquier aviso de filtración, actúa el mismo día.'},
+          {cls:'fb-ok',head:'Buen instinto, pero incompleto.',body:'Las redes sociales pueden usarse para suplantar tu identidad, acceder a contactos o como puerta de entrada a otros servicios. Si usaste la misma contraseña ahí, también están en riesgo.',tip:'No hay cuenta "poco importante" cuando el esfuerzo de cambiar es solo un par de minutos.'},
+        ],
+      },
+      { // Q1: retry (easier/different context)
+        title:'Estás creando una cuenta nueva en una tienda en línea.',
+        ctx:'La tienda te pide crear contraseña. Ya tienes muchas cuentas y recordar una nueva parece complicado.',
+        opts:[
+          {t:'Uso la misma contraseña de siempre — es difícil recordar tantas.',s:1},
+          {t:'Creo una variación: mi contraseña habitual + el nombre del sitio al final.',s:2},
+          {t:'Genero una contraseña aleatoria con un gestor de contraseñas.',s:4},
+          {t:'Creo una frase larga y única para este sitio.',s:3},
+        ],
+        fb:[
+          {cls:'fb-bad',head:'Esta es la práctica más riesgosa.',body:'Si esa tienda es hackeada (y muchas lo son), el atacante tiene inmediatamente acceso a todos tus servicios que usan la misma contraseña.',tip:'Un gestor de contraseñas resuelve el problema: genera y recuerda contraseñas únicas por ti.'},
+          {cls:'fb-ok',head:'Mejor que reutilizar, pero predecible.',body:'Los atacantes conocen este patrón. Si obtienen tu contraseña de un sitio y ven que termina en el nombre del servicio, prueban variaciones en otros lados.',tip:'Una contraseña verdaderamente única no tiene relación alguna con tus otras contraseñas.'},
+          {cls:'fb-good',head:'La mejor opción.',body:'Un gestor genera contraseñas largas, aleatorias y únicas por sitio. Solo necesitas recordar una contraseña maestra. Es la solución más segura y más cómoda a largo plazo.',tip:'La mayoría de dispositivos ya traen un gestor integrado — no necesitas instalar nada extra.'},
+          {cls:'fb-ok',head:'Buen enfoque, con un límite práctico.',body:'Una frase larga y única es mucho mejor que reutilizar. El reto es mantener frases realmente distintas entre 50+ cuentas. Un gestor es el siguiente nivel natural.',tip:'Si usas frases, asegúrate de que sean completamente distintas entre sí, no variaciones del mismo patrón.'},
+        ],
+      },
+      { // Q2: harder
+        title:'Un amigo te dice que usa la misma contraseña "pero muy compleja" en todos sus servicios, convencido de que eso es seguro.',
+        ctx:'Tiene razón en que la complejidad ayuda contra ataques de fuerza bruta. Pero hay otro riesgo que no está considerando.',
+        opts:[
+          {t:'Tiene razón — una contraseña compleja es suficiente protección.',s:1},
+          {t:'La complejidad no importa si el servicio donde la usa es hackeado y expone las contraseñas.',s:4},
+          {t:'Debería cambiarla cada mes para estar más seguro.',s:2},
+          {t:'Solo es riesgo si usa la misma en el banco.',s:3},
+        ],
+        fb:[
+          {cls:'fb-bad',head:'La complejidad no protege contra filtraciones.',body:'Una contraseña puede ser muy compleja y aun así quedar expuesta si el servicio que la almacena es hackeado. La reutilización es el problema, no la complejidad.',tip:'Compleja + única por servicio es la combinación correcta.'},
+          {cls:'fb-good',head:'Exactamente el punto clave.',body:'La complejidad protege contra ataques de fuerza bruta. Pero si un servicio es hackeado y expone contraseñas, la complejidad no importa — el atacante ya tiene el texto exacto y puede probarlo en cualquier otro servicio.',tip:'Por eso la unicidad por servicio es igual de importante que la complejidad.'},
+          {cls:'fb-ok',head:'Cambiar frecuentemente no es la solución.',body:'Cambiar por calendario sin haber tenido una filtración es trabajo innecesario y lleva a contraseñas más débiles ("Enero2024", "Febrero2024"). La clave es unicidad, no frecuencia arbitraria.',tip:'Cambia la contraseña cuando haya motivo real: filtración detectada, dispositivo comprometido.'},
+          {cls:'fb-ok',head:'El riesgo es en todos los servicios, no solo el banco.',body:'Si reutilizas en correo, redes sociales y banco, todos están en riesgo. El correo suele ser el más crítico porque es la llave de recuperación de todo lo demás.',tip:'Prioriza correo principal > banco > redes sociales.'},
+        ],
+      },
+    ],
+    // SUBTOPIC 0.1 — Segundo factor (2FA)
+    [
+      { // Q0: initial
+        title:'Tu banco te ofrece activar verificación en dos pasos. Te explican que además de tu contraseña necesitarás un código cada vez que entres.',
+        ctx:'La opción es: código por SMS o app generadora de códigos. Sientes que agrega un paso que puede ser incómodo.',
+        opts:[
+          {t:'No lo activo — con mi contraseña fuerte es suficiente.',s:1},
+          {t:'Lo activo con SMS porque es más sencillo.',s:3},
+          {t:'Lo activo con app generadora de códigos.',s:4},
+          {t:'Lo activo solo para transferencias, no para el login.',s:2},
+        ],
+        fb:[
+          {cls:'fb-bad',head:'Una contraseña sola no es suficiente.',body:'Las contraseñas se filtran, se roban con phishing o se capturan en dispositivos comprometidos. El segundo factor garantiza que incluso con tu contraseña, sin el código del momento el acceso es imposible.',tip:'El segundo factor bloquea más del 99% de los ataques automatizados de contraseñas.'},
+          {cls:'fb-ok',head:'Buena decisión, con una limitación menor.',body:'SMS es cómodo y mucho mejor que no tener nada. El único riesgo es el SIM swapping (robo de número telefónico), que es raro pero posible. Para la mayoría de personas es protección muy razonable.',tip:'Si en el futuro quieres más seguridad, migrar a una app generadora es sencillo desde la configuración.'},
+          {cls:'fb-good',head:'La opción más segura disponible.',body:'Una app generadora crea códigos que solo existen en tu dispositivo, cambian cada 30 segundos y no dependen de tu número telefónico ni de tu operador. El paso extra dura 3 segundos y multiplica tu seguridad.',tip:'Comienza por el correo principal y el banco — son las cuentas de mayor impacto.'},
+          {cls:'fb-ok',head:'Mejor que nada, pero inconsistente.',body:'El login sin protección es el punto de entrada. Si alguien entra con tu contraseña, ya puede hacer transferencias desde adentro. El segundo factor en el login protege todo lo que viene después.',tip:'Actívalo en el login — es donde más importa.'},
+        ],
+      },
+      { // Q1: retry
+        title:'Tu empresa activa el segundo factor obligatorio para el acceso al correo corporativo.',
+        ctx:'Tus colegas se quejan de que es una molestia. Tú tienes que decidir cómo verlo.',
+        opts:[
+          {t:'Estoy de acuerdo con los colegas — es burocracia innecesaria.',s:1},
+          {t:'Lo acepto porque es obligatorio, pero no lo usaría voluntariamente.',s:2},
+          {t:'Entiendo que protege el acceso incluso si alguien roba mi contraseña.',s:4},
+          {t:'Solo tiene sentido si trabajo con información muy confidencial.',s:3},
+        ],
+        fb:[
+          {cls:'fb-bad',head:'La incomodidad no es mayor que el riesgo.',body:'Un correo corporativo comprometido expone información de la empresa, contactos, conversaciones privadas y puede usarse para ataques internos. Esos 3 segundos extra por login valen esa protección.',tip:'Piénsalo al revés: ¿cuánto tiempo costaría resolver un incidente si tu correo es hackeado?'},
+          {cls:'fb-ok',head:'Usarlo sin convicción deja otros flancos abiertos.',body:'Si entiendes el valor solo en el trabajo pero no en tu vida personal, tus cuentas personales siguen expuestas. Los atacantes no distinguen entre cuentas laborales y personales.',tip:'El correo personal suele ser la llave maestra de casi todo lo demás — también merece protección.'},
+          {cls:'fb-good',head:'Exactamente la perspectiva correcta.',body:'El segundo factor hace que una contraseña robada no sea suficiente para entrar. Sin ese código del momento, el atacante tiene algo inútil. Eso es lo que protege incluso cuando la contraseña ya fue comprometida.',tip:'Extiende ese mismo hábito a tu correo personal y redes sociales — el riesgo es igual de real.'},
+          {cls:'fb-ok',head:'El valor no depende del nivel de confidencialidad.',body:'Cualquier acceso no autorizado a tu correo — aunque no tengas información "muy confidencial" — puede usarse para suplantar tu identidad, acceder a otros servicios o dañar tu reputación.',tip:'El segundo factor protege el acceso en sí, independientemente del contenido.'},
+        ],
+      },
+      { // Q2: harder
+        title:'Recibes un mensaje de texto: "Código de verificación: 582847. No lo compartas." Segundos después una llamada de "soporte técnico" te pide ese código para "verificar tu identidad".',
+        ctx:'La persona en la llamada conoce tu nombre y el nombre del servicio. Suena completamente profesional.',
+        opts:[
+          {t:'Les doy el código porque parecen legítimos y saben quién soy.',s:1},
+          {t:'Les digo que llamaré yo al número oficial del servicio y cuelgo.',s:4},
+          {t:'Les pregunto más datos para verificar que son reales antes de decidir.',s:2},
+          {t:'Cuelgo sin decir nada y bloqueo el número.',s:3},
+        ],
+        fb:[
+          {cls:'fb-bad',head:'El mensaje ya te dio la respuesta: "No lo compartas."',body:'Que sepan tu nombre y el servicio no los hace legítimos — esa información sale de filtraciones o redes sociales. Ese código es exactamente lo que necesitan para completar el acceso a tu cuenta.',tip:'Ningún servicio legítimo te llamará para pedirte un código que acabas de recibir. Eso es, por definición, ingeniería social.'},
+          {cls:'fb-good',head:'Correcto. Esa es la respuesta.',body:'Colgar y llamar tú al número oficial rompe el control que el atacante tiene sobre la conversación. Si realmente hay un problema, el servicio lo confirmará. Si era un ataque, lo evitaste completamente.',tip:'El número oficial siempre está en tu tarjeta física, en el sitio oficial o en tu contrato — nunca en el mensaje o la llamada que recibes.'},
+          {cls:'fb-ok',head:'Mejor que dar el código, pero no suficiente.',body:'Preguntar puede darte información, pero el atacante tiene respuestas preparadas. El tiempo es su aliado — el código expira en minutos y la urgencia que crean funciona. Cada segundo de conversación juega a su favor.',tip:'La validación real viene del canal oficial, no de respuestas en la misma llamada no solicitada.'},
+          {cls:'fb-ok',head:'Protegiste el código. El bloqueo es opcional.',body:'Lo importante es no compartir el código. Bloquear el número no es necesario — los atacantes usan números desechables. Después de colgar, entra a tu cuenta para verificar si hay actividad inusual.',tip:'Si tienes dudas sobre si tu cuenta fue comprometida, cambia la contraseña y revisa los dispositivos con sesión activa.'},
+        ],
+      },
+    ],
+    // SUBTOPIC 0.2 — Códigos de recuperación
+    [
+      { // Q0: initial
+        title:'Acabas de activar el segundo factor en tu correo. El sistema te muestra 10 códigos de recuperación de emergencia y dice: "Guárdalos. No los verás de nuevo."',
+        ctx:'Estos códigos sirven si pierdes el teléfono y no puedes recibir el código de verificación. Sin ellos, perder el teléfono puede significar perder acceso permanente a la cuenta.',
+        opts:[
+          {t:'Los cierro sin guardar — es poco probable que los necesite.',s:1},
+          {t:'Hago una captura de pantalla en mi teléfono.',s:2},
+          {t:'Los guardo en mi gestor de contraseñas.',s:4},
+          {t:'Los imprimo y guardo en un lugar físico seguro.',s:3},
+        ],
+        fb:[
+          {cls:'fb-bad',head:'Esto puede dejarte sin acceso permanente.',body:'Si pierdes el teléfono sin esos códigos, recuperar el acceso puede tardar semanas y no siempre funciona. Guardarlos toma un minuto y evita ese escenario completamente.',tip:'Regla: nunca cierres esa pantalla sin haber guardado los códigos en al menos un lugar.'},
+          {cls:'fb-ok',head:'Mejor que no guardarlos, pero vulnerable.',body:'Si pierdes el teléfono — que es exactamente cuando necesitarías los códigos — también pierdes la captura de pantalla. Además, las capturas son accesibles si alguien tiene tu teléfono.',tip:'El lugar donde guardas los códigos debe ser independiente del dispositivo que podrías perder.'},
+          {cls:'fb-good',head:'La mejor opción.',body:'El gestor de contraseñas está cifrado, protegido por contraseña y accesible desde cualquier dispositivo. Es exactamente el lugar correcto para información sensible que necesitas cuando menos lo esperas.',tip:'Guárdalos con nota: "Códigos de recuperación — [nombre del servicio] — [fecha]".'},
+          {cls:'fb-ok',head:'Funciona bien.',body:'El papel físico tiene una ventaja real: no puede ser hackeado. Es especialmente bueno para cuentas muy críticas. El único riesgo es perderlo o que alguien lo encuentre.',tip:'Guárdalo junto a otros documentos importantes en un lugar seguro de tu hogar.'},
+        ],
+      },
+      { // Q1: retry
+        title:'Le explicas a tu hermana la importancia del segundo factor. Ella te dice: "Lo activé pero perdí los códigos de recuperación. ¿Qué pasa si pierdo el teléfono?"',
+        ctx:'Tu hermana usa el correo para recuperar contraseñas de otros servicios. Perder el acceso sería un problema serio.',
+        opts:[
+          {t:'No pasa nada — el servicio siempre tiene una forma de recuperar el acceso.',s:1},
+          {t:'Debería desactivar el segundo factor para evitar ese riesgo.',s:1},
+          {t:'Debería generar nuevos códigos de recuperación ahora, antes de que pase algo.',s:4},
+          {t:'Puede usar el número de teléfono como respaldo alternativo.',s:3},
+        ],
+        fb:[
+          {cls:'fb-bad',head:'El proceso de recuperación sin códigos es largo y no garantizado.',body:'Recuperar acceso sin el segundo factor ni los códigos puede tardar semanas e implica verificación de identidad compleja. No es algo que quieras descubrir en una emergencia.',tip:'Es mejor resolver esto ahora que cuando ya no puedas entrar.'},
+          {cls:'fb-bad',head:'Desactivar quita la protección que ya tiene.',body:'La solución al riesgo de perder los códigos no es eliminar el segundo factor — es generar nuevos códigos ahora que todavía puede entrar a la cuenta.',tip:'La mayoría de servicios permiten regenerar códigos de recuperación desde la configuración de seguridad.'},
+          {cls:'fb-good',head:'Exactamente lo que debe hacer.',body:'Mientras todavía tiene acceso a la cuenta, puede ir a configuración de seguridad y regenerar nuevos códigos. Esta vez los guarda correctamente. Resolver esto ahora tarda 5 minutos.',tip:'La mayoría de servicios tienen en Configuración > Seguridad > Códigos de recuperación o similar.'},
+          {cls:'fb-ok',head:'Es una opción adicional válida, pero no reemplaza los códigos.',body:'El teléfono como respaldo es útil, pero tiene el riesgo del SIM swapping. Lo ideal es tener códigos de recuperación como capa primaria y el teléfono como adicional.',tip:'Los códigos de recuperación son el respaldo más seguro porque no dependen de ningún servicio externo.'},
+        ],
+      },
+      { // Q2: harder
+        title:'Configuras el segundo factor en tu cuenta bancaria. El banco te ofrece: app generadora de códigos, SMS, o preguntas de seguridad. ¿Cuál ofrece menos riesgo real?',
+        ctx:'No es una pregunta de preferencia — es sobre cuál tiene menos puntos de falla técnica.',
+        opts:[
+          {t:'Preguntas de seguridad — nadie sabe las respuestas excepto yo.',s:1},
+          {t:'SMS — es lo que todos usan y siempre está disponible.',s:2},
+          {t:'App generadora de códigos — genera los códigos localmente en el dispositivo.',s:4},
+          {t:'Da igual, cualquiera tiene el mismo nivel de seguridad.',s:1},
+        ],
+        fb:[
+          {cls:'fb-bad',head:'Las preguntas de seguridad son la opción menos segura.',body:'Las respuestas (nombre de mascota, ciudad natal, etc.) suelen estar en redes sociales o filtraciones. Además, muchos servicios las muestran como texto plano en sus sistemas.',tip:'Si un servicio solo ofrece preguntas de seguridad, usa respuestas aleatorias y guárdalas en el gestor.'},
+          {cls:'fb-ok',head:'SMS es conveniente pero tiene un punto de falla.',body:'El SIM swapping (robo de número telefónico) permite a un atacante redirigir tus SMS. No es común, pero es un riesgo real especialmente para cuentas de alto valor como el banco.',tip:'Para el banco, si está disponible, la app generadora es la opción más robusta.'},
+          {cls:'fb-good',head:'Correcto. La app generadora tiene menos puntos de falla.',body:'Los códigos se generan localmente en tu dispositivo sin depender de tu operador ni de una red. No pueden ser interceptados por SIM swapping ni por fallas del operador. Cambian cada 30 segundos.',tip:'Guarda también los códigos de recuperación de la app generadora — si pierdes el teléfono, los necesitarás.'},
+          {cls:'fb-bad',head:'No tienen el mismo nivel de seguridad.',body:'Hay diferencias técnicas reales entre métodos. Las preguntas de seguridad son las más débiles, SMS tiene el riesgo de SIM swapping, y la app generadora es la más robusta porque funciona localmente.',tip:'Elige siempre la opción más fuerte disponible — el esfuerzo adicional es mínimo comparado con el beneficio.'},
+        ],
+      },
+    ],
+    // SUBTOPIC 0.3 — Reconocer intentos de robo
+    [
+      { // Q0: initial
+        title:'Recibes un correo con asunto: "Acción requerida: tu cuenta será suspendida en 24 horas." El correo tiene el logo de tu banco y un botón que dice "Verificar cuenta ahora".',
+        ctx:'El correo llegó a las 11pm. Sientes presión porque no quieres perder el acceso a tu cuenta.',
+        opts:[
+          {t:'Hago clic en el botón para verificar antes de que sea tarde.',s:1},
+          {t:'Escribo la URL del banco manualmente en el navegador y verifico desde ahí.',s:4},
+          {t:'Reenvío el correo a un amigo para que opine si es real.',s:2},
+          {t:'Marco el correo como spam y lo elimino.',s:3},
+        ],
+        fb:[
+          {cls:'fb-bad',head:'La urgencia es la táctica central del phishing.',body:'Los correos que crean presión de tiempo están diseñados para que actúes antes de pensar. El botón puede llevar a un sitio idéntico al real que captura tus credenciales en el momento en que las escribes.',tip:'La regla más importante: nunca inicies sesión en una cuenta bancaria desde un enlace en un correo.'},
+          {cls:'fb-good',head:'Exactamente lo correcto.',body:'Al escribir la URL tú mismo, garantizas que estás en el sitio real y no en una copia. Si hay una suspensión real, la verás desde tu sesión legítima. Si no hay nada, el correo era falso.',tip:'Este mismo principio aplica para cualquier servicio: correo, redes sociales, plataformas de pago.'},
+          {cls:'fb-ok',head:'La intención es buena, el método no resuelve el riesgo.',body:'Tu amigo no tiene más información que tú para saber si el correo es real. Mientras esperas respuesta, si el correo era phishing, el tiempo trabaja a favor del atacante.',tip:'La duda se resuelve en un minuto: entra directamente al sitio oficial y verifica.'},
+          {cls:'fb-ok',head:'Correcto en el resultado.',body:'Eliminar el correo sin hacer clic protege contra el ataque inmediato. Para ser más completo, también podrías verificar tu cuenta directamente en el sitio oficial para confirmar que todo está bien.',tip:'Marcar como phishing (no solo spam) ayuda al servicio de correo a proteger a otros usuarios.'},
+        ],
+      },
+      { // Q1: retry
+        title:'Un mensaje de WhatsApp de un contacto conocido dice: "Te mando este link, hay algo sobre ti ahí." El mensaje incluye una URL acortada.',
+        ctx:'El contacto normalmente no te manda este tipo de cosas. La URL acortada no muestra el sitio de destino.',
+        opts:[
+          {t:'Abro el link porque el mensaje viene de alguien que conozco.',s:1},
+          {t:'Le pregunto por otro canal (llamada o mensaje directo) si lo envió él.',s:4},
+          {t:'Le pregunto en el mismo WhatsApp qué es ese link antes de abrirlo.',s:3},
+          {t:'Abro el link en modo incógnito para que sea más seguro.',s:2},
+        ],
+        fb:[
+          {cls:'fb-bad',head:'Las cuentas de contactos conocidos pueden estar comprometidas.',body:'El mensaje puede venir de la cuenta de tu contacto sin que él lo haya enviado. Las cuentas de WhatsApp se comprometen y se usan para enviar links maliciosos a toda la lista de contactos.',tip:'Un link inesperado con texto genérico es señal de alerta, independientemente de quién lo envíe.'},
+          {cls:'fb-good',head:'Correcto — verificar por otro canal es la clave.',body:'Si la cuenta de tu contacto fue comprometida, el atacante controla esa conversación de WhatsApp y puede responder como si fuera él. Un canal diferente (llamada, SMS, otro app) rompe ese control.',tip:'"¿Tú enviaste este link?" por llamada es suficiente para confirmar en 10 segundos.'},
+          {cls:'fb-ok',head:'Mejor que nada, pero tiene un riesgo.',body:'Si la cuenta de tu contacto fue comprometida, el atacante puede responder en el mismo WhatsApp haciéndose pasar por él. Verificar por el mismo canal no garantiza que estás hablando con la persona real.',tip:'Para confirmar links sospechosos, usa un canal diferente al que recibiste el mensaje.'},
+          {cls:'fb-bad',head:'El modo incógnito no protege contra malware o phishing.',body:'El modo incógnito solo impide que el navegador guarde el historial localmente. No protege contra sitios que roban credenciales, descargan archivos maliciosos o explotan vulnerabilidades del navegador.',tip:'Incógnito es para privacidad de historial — no es una capa de seguridad contra sitios maliciosos.'},
+        ],
+      },
+      { // Q2: harder
+        title:'Recibes un correo de "soporte@servicio-clientes-banco.com" con tu nombre completo, número de cliente y últimos 4 dígitos de tu tarjeta. Te pide actualizar tus datos.',
+        ctx:'El correo tiene toda tu información real. Parece imposible que sea falso si saben esos datos.',
+        opts:[
+          {t:'Si tienen mi información real, el correo debe ser legítimo.',s:1},
+          {t:'Entro al sitio oficial del banco directamente para verificar si hay alguna actualización pendiente.',s:4},
+          {t:'Respondo el correo pidiendo más información para confirmar.',s:2},
+          {t:'Llamo al banco al número de mi tarjeta para verificar.',s:4},
+        ],
+        fb:[
+          {cls:'fb-bad',head:'La información personal no garantiza la autenticidad.',body:'Nombre, número de cliente y últimos dígitos de tarjeta se obtienen de filtraciones de datos — son datos que muchos servicios han expuesto. Un atacante los usa precisamente para dar credibilidad al correo.',tip:'La autenticidad se verifica por el canal que tú controlas, no por la información que ellos tienen.'},
+          {cls:'fb-good',head:'Correcto. El canal que controlas es el seguro.',body:'Al entrar directamente al sitio oficial, cualquier actualización real aparecerá en tu perfil. Si no hay nada pendiente, el correo era falso. No necesitas saber si el correo era real para resolver esto.',tip:'Este principio funciona para cualquier servicio: entra por tu cuenta y verifica desde adentro.'},
+          {cls:'fb-ok',head:'Responder puede dar más información al atacante.',body:'Al responder confirmas que la dirección está activa y que tomaste el correo en serio. El atacante puede usar esa respuesta para más ingeniería social.',tip:'No respondas correos sospechosos — verifica por el canal oficial directamente.'},
+          {cls:'fb-good',head:'Correcto también.',body:'Llamar al número de tu tarjeta física — que nunca cambia — garantiza que estás hablando con el banco real. Si hay una actualización pendiente, ellos lo confirmarán. Si no, el correo era phishing.',tip:'El número en tu tarjeta es siempre el canal seguro, independientemente de lo que diga cualquier correo.'},
+        ],
+      },
+    ],
+  ],
+  // DOMAIN 1 — Respaldos
+  [
+    // SUBTOPIC 1.0 — Dónde guardar archivos
+    [
+      { // Q0: initial
+        title:'Tienes años de fotos y documentos importantes guardados únicamente en tu laptop.',
+        ctx:'Un colega te cuenta que su disco duro falló sin aviso y perdió todo. Empiezas a preguntarte si tus archivos están realmente seguros.',
+        opts:[
+          {t:'Mis archivos están en la laptop — si falla el disco, veré qué hago.',s:1},
+          {t:'Tengo la nube activa con sincronización automática.',s:3},
+          {t:'Tengo la nube activa y un disco externo que desconecto cuando no lo uso.',s:4},
+          {t:'Tengo un disco externo siempre conectado a la laptop.',s:2},
+        ],
+        fb:[
+          {cls:'fb-bad',head:'Un solo punto de falla es un riesgo real.',body:'Los discos fallan. No es una posibilidad remota — es una certeza estadística con el tiempo. Un golpe, un derrame, una falla eléctrica, y todo desaparece. "Veré qué hago" significa recuperación costosa o pérdida total.',tip:'La regla 3-2-1: 3 copias, en 2 medios distintos, 1 fuera de línea o en otra ubicación.'},
+          {cls:'fb-ok',head:'Buen primer paso, con un punto ciego.',body:'La nube cubre fallo de hardware, robo y daño físico. El riesgo que no cubre: si hay ransomware y la sincronización está activa, los archivos cifrados se sincronizan también antes de que notes el ataque.',tip:'Un disco externo desconectado es la capa que el ransomware no puede alcanzar.'},
+          {cls:'fb-good',head:'La estrategia más sólida para uso personal.',body:'La nube cubre fallo de hardware, robo y desastres físicos. El disco externo desconectado cubre ransomware — no puede cifrar lo que no está conectado. Esta combinación protege contra prácticamente cualquier escenario.',tip:'Actualiza el disco externo una vez al mes. Ponlo en el calendario como recordatorio fijo.'},
+          {cls:'fb-ok',head:'Mejor que nada, pero con un riesgo específico.',body:'Un disco externo siempre conectado protege contra fallo del disco interno. Pero en un ataque de ransomware, el malware cifra todo lo que puede alcanzar — incluyendo el disco externo conectado.',tip:'Desconecta el disco cuando no lo estés usando activamente. Ese hábito simple lo hace mucho más seguro.'},
+        ],
+      },
+      { // Q1: retry
+        title:'Tienes sincronización en la nube activa para tus documentos. Eso significa que si el disco de tu computadora falla, ¿estás completamente protegido?',
+        ctx:'La nube sincroniza automáticamente. Parece que todos los archivos deberían estar a salvo.',
+        opts:[
+          {t:'Sí — si está en la nube, tengo respaldo completo de todo.',s:2},
+          {t:'Depende — la nube cubre fallo de hardware pero no ransomware si la sincronización estaba activa.',s:4},
+          {t:'No — la nube nunca es segura para archivos importantes.',s:1},
+          {t:'Sí, pero solo si pago por el plan de pago, no el gratuito.',s:2},
+        ],
+        fb:[
+          {cls:'fb-ok',head:'Parcialmente correcto.',body:'La nube cubre fallo de disco y pérdida del dispositivo. Pero si sufres un ataque de ransomware, los archivos cifrados se sincronizan a la nube también. Para ese escenario, necesitas una copia que no esté conectada.',tip:'La nube más un disco externo desconectado cubre ambos escenarios.'},
+          {cls:'fb-good',head:'Exactamente correcto.',body:'La sincronización activa es bidireccional. Si el ransomware cifra tus archivos locales, esos archivos cifrados se sincronizan a la nube reemplazando las versiones originales. Un disco externo desconectado no tiene ese problema.',tip:'Algunos servicios de nube guardan versiones anteriores por tiempo limitado — revisa si el tuyo lo hace.'},
+          {cls:'fb-bad',head:'La nube sí ofrece protección real para muchos escenarios.',body:'Fallo de disco, robo, daño físico — la nube cubre todo eso. El punto débil específico es el ransomware con sincronización activa. No es que la nube sea insegura, es que tiene un límite específico.',tip:'La nube es una capa de protección valiosa — complementada con un disco externo es aún mejor.'},
+          {cls:'fb-ok',head:'El plan no es el factor determinante aquí.',body:'El problema de la sincronización activa con ransomware existe independientemente del plan. Lo que hace la diferencia es tener una copia offline, no el nivel de suscripción.',tip:'Enfócate en la estrategia de respaldo (nube + disco externo) más que en el plan específico.'},
+        ],
+      },
+      { // Q2: harder
+        title:'Un familiar trabaja desde casa y guarda todos sus archivos laborales en su laptop. Nunca ha configurado respaldo. ¿Cuál sería el consejo más útil y realista para que empiece hoy?',
+        ctx:'No es experto en tecnología. Quieres que la solución sea simple y que realmente la aplique.',
+        opts:[
+          {t:'Que compre un servidor NAS para tener respaldo local profesional.',s:1},
+          {t:'Que active la sincronización automática a la nube en sus documentos — es el primer paso más accesible.',s:4},
+          {t:'Que copie manualmente sus archivos a USB cada semana.',s:2},
+          {t:'Que instale software de respaldo empresarial para automatizarlo todo.',s:2},
+        ],
+        fb:[
+          {cls:'fb-bad',head:'Un NAS es excesivo para un usuario doméstico sin experiencia.',body:'Un NAS requiere configuración técnica, mantenimiento y tiene un costo significativo. Si no sabe configurarlo bien, puede quedar peor protegido que sin nada.',tip:'La mejor solución es la que realmente va a usar. Para un no técnico, la nube automática es ideal.'},
+          {cls:'fb-good',head:'Correcto — accesible y que realmente funciona.',body:'Activar sincronización automática es algo que puede hacer en minutos, no requiere mantenimiento constante, y funciona en segundo plano sin que tenga que recordarlo. Es el punto de partida correcto.',tip:'Una vez que la nube esté activa, el segundo paso es agregar un disco externo mensual — pero la nube ya cubre la mayoría de escenarios.'},
+          {cls:'fb-ok',head:'Funciona, pero depende de que lo recuerde.',body:'Las copias manuales son mejores que nada. El problema es que "cada semana" suele convertirse en "cuando me acuerdo", y en una falla podría perder semanas de trabajo.',tip:'La automatización es el factor más importante para que el respaldo sea real. Si puede olvidarlo y funciona igual, es mejor.'},
+          {cls:'fb-ok',head:'Demasiado complejo para empezar.',body:'Un software empresarial tiene curva de aprendizaje y configuración que puede abrumar a alguien sin experiencia técnica. La probabilidad de que lo configure mal o lo abandone es alta.',tip:'Empieza simple: nube automática. Si después quiere más control, puede agregar herramientas.'},
+        ],
+      },
+    ],
+    // SUBTOPIC 1.1 — Verificar respaldos
+    [
+      { // Q0: initial
+        title:'Llevas un año con respaldo en la nube activo. Un colega te pregunta cuándo fue la última vez que verificaste que el respaldo realmente funciona.',
+        ctx:'Te das cuenta de que nunca has intentado restaurar un archivo desde el respaldo. Solo has visto que los archivos aparecen listados en la nube.',
+        opts:[
+          {t:'Ver los archivos listados en la nube es suficiente — si están ahí, están bien.',s:2},
+          {t:'Nunca lo he probado — si está configurado, debería funcionar.',s:1},
+          {t:'Esta semana descargo un archivo del respaldo y confirmo que puedo abrirlo.',s:4},
+          {t:'Lo reviso cuando tenga tiempo libre.',s:2},
+        ],
+        fb:[
+          {cls:'fb-ok',head:'Ver los archivos no es lo mismo que poder restaurarlos.',body:'Un archivo puede aparecer listado pero estar corrupto, incompleto o con un formato incompatible. La única prueba real de un respaldo es descargarlo y abrirlo exitosamente.',tip:'La diferencia entre "está ahí" y "puedo recuperarlo" es exactamente la que importa en una emergencia.'},
+          {cls:'fb-bad',head:'Un respaldo no probado no es un respaldo real.',body:'Los servicios de nube pueden tener errores de sincronización, cuotas llenas o archivos corruptos sin que te avisen. Descubrir que no funciona justo cuando lo necesitas es el peor momento posible.',tip:'Una prueba de 5 minutos hoy puede ahorrarte semanas de trabajo en una emergencia.'},
+          {cls:'fb-good',head:'Exactamente lo que debes hacer.',body:'Restaurar un archivo real — no solo verlo en la lista — confirma que la sincronización está activa, los archivos no están corruptos y sabes cómo hacerlo cuando de verdad lo necesites.',tip:'Ponlo en el calendario: "Probar respaldo — 5 min" una vez al mes o cada trimestre.'},
+          {cls:'fb-ok',head:'"Cuando tenga tiempo" suele significar nunca.',body:'Igual que el respaldo en sí, la verificación necesita ser programada, no dejarse para cuando haya tiempo. El tiempo disponible siempre tiene prioridades que lo desplazan.',tip:'Programa el recordatorio ahora, aunque sea para la próxima semana. La intención sin fecha no se convierte en acción.'},
+        ],
+      },
+      { // Q1: retry
+        title:'¿Cuál de estas acciones confirma realmente que tu respaldo está funcionando?',
+        ctx:'Tienes varios archivos sincronizados a la nube desde hace meses.',
+        opts:[
+          {t:'Verificar que la app de sincronización muestra "sincronizado" o "al día".',s:2},
+          {t:'Entrar a la nube y ver que los archivos están listados con sus nombres.',s:2},
+          {t:'Descargar un archivo específico del respaldo y abrirlo exitosamente.',s:4},
+          {t:'Esperar a que el sistema te avise si hay algún error.',s:1},
+        ],
+        fb:[
+          {cls:'fb-ok',head:'El estado "sincronizado" indica que el proceso corrió, no que los archivos son recuperables.',body:'La app puede mostrar que sincronizó correctamente pero los archivos pueden estar corruptos en el servidor. Son dos cosas distintas.',tip:'La única prueba definitiva es poder recuperar el archivo y usarlo.'},
+          {cls:'fb-ok',head:'Ver los nombres confirma que existen, no que funcionan.',body:'Un archivo listado puede estar corrupto, tener el tamaño incorrecto o no abrirse. La lista es solo una referencia visual, no una prueba de integridad.',tip:'La prueba real es: descargar + abrir + confirmar que el contenido está intacto.'},
+          {cls:'fb-good',head:'Correcto. Esa es la única prueba real.',body:'Descargar un archivo y abrirlo exitosamente confirma que el proceso completo funciona: la carga al servidor fue exitosa, el archivo no está corrupto y la descarga funciona. No hay atajos para esta verificación.',tip:'Elige archivos representativos — un documento, una foto, una hoja de cálculo — para cubrir distintos tipos.'},
+          {cls:'fb-bad',head:'Los errores no siempre generan avisos automáticos.',body:'Muchos problemas de integridad de archivos no producen alertas visibles. El archivo puede estar corruptamente sincronizado sin que el sistema lo detecte.',tip:'No dependas de que el sistema te avise — haz la verificación activamente.'},
+        ],
+      },
+      { // Q2: harder
+        title:'Tu empresa tiene respaldo automático configurado desde hace 2 años. El equipo de TI asume que todo funciona porque nunca han recibido alertas de error. ¿Qué falta?',
+        ctx:'El respaldo corre en segundo plano, sin interrupciones visibles, y el dashboard muestra "activo".',
+        opts:[
+          {t:'Nada — si no hay alertas de error en 2 años, el respaldo funciona.',s:1},
+          {t:'Deberían aumentar la frecuencia de respaldo a más veces por día.',s:2},
+          {t:'Deberían hacer una restauración de prueba periódica para verificar que los archivos son recuperables.',s:4},
+          {t:'Deberían cambiar de proveedor de respaldo por seguridad.',s:1},
+        ],
+        fb:[
+          {cls:'fb-bad',head:'Ausencia de alertas no confirma que funciona.',body:'Los sistemas de respaldo pueden correr sin errores aparentes pero con archivos corruptos, configuraciones incompletas o problemas de integridad que solo se descubren al intentar restaurar.',tip:'En empresas, se recomienda una restauración de prueba al menos trimestralmente.'},
+          {cls:'fb-ok',head:'La frecuencia es un factor, pero no es el problema aquí.',body:'Aumentar la frecuencia mejora qué tan recientes son los datos del respaldo. Pero si los respaldos frecuentes están corruptos, la frecuencia no ayuda. El problema es que nunca se ha verificado que funcionen.',tip:'Primero verifica que lo que tienes funciona; luego optimiza la frecuencia.'},
+          {cls:'fb-good',head:'Exactamente lo que falta.',body:'En 2 años sin una restauración de prueba, no saben si los archivos son realmente recuperables. El dashboard activo confirma que el proceso corre, no que produce archivos utilizables. Una prueba de restauración es la única validación real.',tip:'La prueba debe incluir restaurar a un entorno diferente, no al mismo lugar de origen, para simular una emergencia real.'},
+          {cls:'fb-bad',head:'Cambiar de proveedor no resuelve el problema real.',body:'El problema es la falta de verificación, no el proveedor. Con cualquier proveedor, sin restauraciones de prueba periódicas, no saben si el respaldo funciona.',tip:'Establece un protocolo de prueba antes de considerar cambios de proveedor.'},
+        ],
+      },
+    ],
+    // SUBTOPIC 1.2 — Respuesta ante ransomware
+    [
+      { // Q0: initial
+        title:'Un lunes por la mañana abres tu laptop y todos los archivos tienen una extensión extraña. Un mensaje dice: "Tus archivos fueron cifrados. Paga para recuperarlos."',
+        ctx:'La laptop sigue conectada a la red WiFi de casa, donde también hay otros dispositivos: el teléfono, la tablet de tu hijo y la laptop de trabajo.',
+        opts:[
+          {t:'Busco en internet cómo descifrar los archivos desde esta misma laptop.',s:1},
+          {t:'Desconecto la laptop de la red inmediatamente y luego evalúo opciones.',s:4},
+          {t:'Pago el rescate — quiero recuperar los archivos lo más rápido posible.',s:1},
+          {t:'Apago la laptop y la llevo a un técnico.',s:2},
+        ],
+        fb:[
+          {cls:'fb-bad',head:'Buscar soluciones con el equipo conectado permite que el daño continúe.',body:'Mientras la laptop está en la red, el ransomware puede propagarse a los otros dispositivos. Además, algunas "soluciones" en línea son más malware disfrazado de herramientas de recuperación.',tip:'Primer paso siempre: desconectar de la red. Luego investiga desde otro dispositivo limpio.'},
+          {cls:'fb-good',head:'Correcto. Ese es el primer paso.',body:'Desconectar de la red contiene el daño: el ransomware no puede propagarse a otros dispositivos, no puede comunicarse con el servidor del atacante y no puede cifrar más archivos en red compartida. Ganas tiempo para evaluar con calma.',tip:'Después: no pagues, reporta a soporte técnico, y verifica si tienes un respaldo externo desconectado.'},
+          {cls:'fb-bad',head:'Pagar no garantiza recuperación.',body:'Pagar financia a los atacantes para seguir operando, no garantiza que envíen la clave de descifrado, y te marca como objetivo dispuesto a pagar. Mientras deliberas si pagar, la laptop sigue en la red y el ransomware sigue activo.',tip:'Primer paso: desconectar. Pagar es siempre el último recurso y raramente funciona.'},
+          {cls:'fb-ok',head:'Mejor que no hacer nada, pero hay un paso más urgente antes.',body:'Apagar puede detener el cifrado activo, pero si la laptop sigue en la red antes de apagarla, el ransomware ya pudo propagarse a otros dispositivos. Desconectar de la red primero, luego apagar.',tip:'El orden correcto: 1) Desconectar de red, 2) Evaluar si apagar, 3) Contactar soporte.'},
+        ],
+      },
+      { // Q1: retry
+        title:'¿Por qué no deberías apagar inmediatamente un equipo infectado con ransomware?',
+        ctx:'El instinto es apagar para "detener" el ataque. Pero hay un motivo técnico para pensarlo dos veces.',
+        opts:[
+          {t:'Porque el ransomware se activa más rápido al reiniciar.',s:2},
+          {t:'Porque apagar puede destruir evidencia forense en memoria RAM que ayuda a identificar el tipo de ransomware.',s:4},
+          {t:'No hay razón — apagar siempre es lo primero que se debe hacer.',s:1},
+          {t:'Porque el disco duro se daña si se apaga durante el cifrado.',s:2},
+        ],
+        fb:[
+          {cls:'fb-ok',head:'No es la razón principal.',body:'El ransomware no se "activa más rápido" al reiniciar — la mayoría está diseñado para continuar en el arranque. Pero no es el motivo técnico más importante para no apagar de inmediato.',tip:'La razón real tiene que ver con la evidencia que existe en la memoria activa del sistema.'},
+          {cls:'fb-good',head:'Correcto.',body:'La memoria RAM contiene información sobre el proceso activo del ransomware, posibles claves de descifrado temporales y detalles que ayudan a identificar la variante. Un análisis forense mientras el equipo está encendido puede recuperar datos valiosos. Apagar destruye esa información.',tip:'En un contexto empresarial, un especialista en forense puede analizar la RAM antes de apagar. En casa, la prioridad es desconectar de la red y contactar soporte.'},
+          {cls:'fb-bad',head:'Apagar puede tener consecuencias técnicas.',body:'Aunque detiene el cifrado activo, apagar elimina información en RAM que podría ayudar a recuperar archivos o identificar el ransomware. En entornos empresariales, los especialistas forenses prefieren trabajar con el equipo encendido.',tip:'La prioridad inmediata es desconectar de la red, no necesariamente apagar.'},
+          {cls:'fb-ok',head:'No es el riesgo principal aquí.',body:'Los discos modernos manejan el apagado durante escritura sin daño físico permanente. La razón para no apagar inmediatamente es preservar evidencia forense en RAM, no proteger el hardware.',tip:'El hardware está bien — lo que se pierde al apagar es información sobre el ataque que podría ayudar a la recuperación.'},
+        ],
+      },
+      { // Q2: harder
+        title:'Tienes un respaldo en disco externo que actualizaste hace 3 días. Sufres un ataque de ransomware. ¿Cuál es la secuencia correcta de acciones?',
+        ctx:'El disco externo no estaba conectado en el momento del ataque. Tienes acceso a otro equipo limpio.',
+        opts:[
+          {t:'1) Pagar el rescate 2) Restaurar desde respaldo si no funciona.',s:1},
+          {t:'1) Intentar descifrar desde el mismo equipo infectado 2) Restaurar si no funciono.',s:1},
+          {t:'1) Desconectar de la red 2) Reportar 3) Restaurar desde el respaldo externo en un equipo limpio.',s:4},
+          {t:'1) Conectar el disco externo al equipo infectado 2) Copiar los archivos cifrados al disco.',s:1},
+        ],
+        fb:[
+          {cls:'fb-bad',head:'Pagar primero es la peor opción.',body:'Pagar no garantiza recuperación y financia al atacante. Si tienes un respaldo funcional, no hay ninguna razón para pagar. El rescate es siempre el último recurso, no el primero.',tip:'Con un respaldo verificado de hace 3 días, la pérdida máxima son esos 3 días — recuperable.'},
+          {cls:'fb-bad',head:'Usar el equipo infectado para descifrar es riesgoso.',body:'El equipo infectado puede tener más malware además del ransomware visible. Usarlo activamente puede empeorar la situación o contaminar más archivos.',tip:'Trabaja siempre desde un equipo limpio cuando hagas recuperación de un sistema infectado.'},
+          {cls:'fb-good',head:'La secuencia correcta.',body:'Desconectar de la red contiene el daño. Reportar a TI o soporte documenta el incidente y obtiene orientación experta. Restaurar desde el disco externo (que no estaba conectado, por lo tanto no fue cifrado) en un equipo limpio es la recuperación más segura.',tip:'Verifica que el equipo de restauración esté completamente limpio antes de conectar el disco externo.'},
+          {cls:'fb-bad',head:'Conectar el disco externo al equipo infectado es riesgoso.',body:'El equipo infectado puede contaminar el disco externo — el ransomware o malware adicional puede propagarse al conectar cualquier dispositivo de almacenamiento.',tip:'Nunca conectes tu respaldo a un equipo infectado. Usa siempre un equipo limpio para la restauración.'},
+        ],
+      },
+    ],
+    // SUBTOPIC 1.3 — Compartir documentos
+    [
+      { // Q0: initial
+        title:'Un compañero de trabajo te pide un documento de proyecto. Generas un enlace público porque es más rápido que pedirle su correo.',
+        ctx:'El documento tiene información interna del proyecto: cronogramas, presupuestos estimados, nombres de clientes.',
+        opts:[
+          {t:'El enlace público está bien — solo mi compañero tiene el link.',s:1},
+          {t:'Mejor compartir directamente con la cuenta de correo de mi compañero.',s:4},
+          {t:'Genero el enlace con expiración de 48 horas.',s:3},
+          {t:'Le mando el archivo como adjunto por correo.',s:3},
+        ],
+        fb:[
+          {cls:'fb-bad',head:'"Solo mi compañero tiene el link" es un supuesto frágil.',body:'Un link puede ser reenviado accidentalmente, aparecer en historial de correo, indexarse en buscadores internos o quedar expuesto si el dispositivo de tu compañero es comprometido. Información de clientes y presupuestos merece más control.',tip:'La pregunta correcta: ¿quién debería poder ver esto? Si la respuesta es "solo mi compañero", comparte solo con él.'},
+          {cls:'fb-good',head:'La opción con más control.',body:'Compartir con una cuenta específica significa que solo esa persona puede acceder, tienes un registro de quién tiene acceso y puedes revocar cuando sea necesario. Toma los mismos segundos que generar un link público.',tip:'En la mayoría de plataformas: clic en "compartir" → escribes el correo → listo. No más lento que un link.'},
+          {cls:'fb-ok',head:'Mejor que un link permanente.',body:'La expiración limita el tiempo de exposición. Pero durante esas 48 horas, cualquiera con el link puede acceder sin restricción. Para documentos con datos de clientes, el control de quién accede es más importante que el tiempo.',tip:'Combina expiración con acceso por cuenta específica cuando el contenido sea sensible.'},
+          {cls:'fb-ok',head:'Controlado, con una limitación.',body:'El adjunto por correo solo llega a quien tú lo envías. El lado negativo: queda en el historial de correo de ambos indefinidamente y si el documento se actualiza, tu compañero tiene una versión desactualizada.',tip:'Para documentos que se actualizan, compartir en la nube con permisos específicos es más manejable.'},
+        ],
+      },
+      { // Q1: retry
+        title:'¿Cuál es el riesgo principal de compartir documentos con enlaces que no requieren iniciar sesión?',
+        ctx:'Los enlaces sin login son convenientes y ampliamente usados.',
+        opts:[
+          {t:'Los archivos se descargan más lento.',s:1},
+          {t:'El link puede llegar a personas no autorizadas sin que lo sepas.',s:4},
+          {t:'La nube cobra más por ese tipo de links.',s:1},
+          {t:'Los archivos no se pueden editar con ese tipo de link.',s:2},
+        ],
+        fb:[
+          {cls:'fb-bad',head:'La velocidad no tiene relación con el tipo de enlace.',body:'El riesgo de los links públicos no es técnico de rendimiento — es de control de acceso.',tip:'El problema es quién puede verlo, no qué tan rápido se descarga.'},
+          {cls:'fb-good',head:'Correcto. El control de acceso es el riesgo central.',body:'Un link sin autenticación puede ser reenviado a cualquiera, copiado de un historial de correo, encontrado en una búsqueda o quedar expuesto si cualquier dispositivo que lo recibió es comprometido. No tienes visibilidad ni control de quién termina teniendo ese link.',tip:'La alternativa: compartir con cuentas específicas te da la lista exacta de quién puede acceder.'},
+          {cls:'fb-bad',head:'El costo no depende del tipo de enlace de esa manera.',body:'Los modelos de precios de la nube no funcionan así. El riesgo es de acceso no autorizado, no financiero.',tip:'Enfócate en quién puede ver el archivo — ese es el riesgo real.'},
+          {cls:'fb-ok',head:'Los permisos de edición son separables del tipo de link.',body:'Puedes generar un link público solo de lectura o de edición — son configuraciones independientes. El riesgo principal no es la edición sino quién puede acceder al link.',tip:'El control de acceso (quién puede ver) es más importante que el control de edición (qué puede hacer).'},
+        ],
+      },
+      { // Q2: harder
+        title:'Tu empresa tiene una política de compartir documentos internos solo con cuentas corporativas, sin links públicos. Un cliente externo necesita un archivo urgente y no tiene cuenta corporativa.',
+        ctx:'El archivo tiene información contractual. El cliente lo necesita en los próximos 30 minutos.',
+        opts:[
+          {t:'Genero un link público porque la urgencia justifica saltarse la política.',s:1},
+          {t:'Le mando el archivo como adjunto por correo al cliente.',s:3},
+          {t:'Genero un link con expiración de 2 horas y contraseña, y se la doy al cliente por separado.',s:4},
+          {t:'Le digo al cliente que espere hasta que TI pueda crear un acceso formal.',s:2},
+        ],
+        fb:[
+          {cls:'fb-bad',head:'La urgencia no justifica eliminar controles de seguridad.',body:'Las políticas existen precisamente para situaciones bajo presión — cuando la urgencia hace que sea tentador saltarlas. Un link público con información contractual puede llegar a terceros no autorizados.',tip:'La urgencia debe activar creatividad dentro de los controles, no la eliminación de los controles.'},
+          {cls:'fb-ok',head:'Razonable para urgencias, con limitaciones.',body:'El adjunto por correo llega directamente al cliente sin link público. El lado negativo: queda en el historial de correo sin fecha de expiración y si se reenvía, no tienes control.',tip:'Si el adjunto funciona para este caso, considera agregar contraseña al archivo para una capa extra.'},
+          {cls:'fb-good',head:'La solución que equilibra urgencia y control.',body:'Un link con expiración corta limita el tiempo de exposición. La contraseña enviada por separado (por otro canal, como llamada o SMS) asegura que solo quien tú contactaste puede abrirlo. Cumple la urgencia sin eliminar los controles.',tip:'Separar el link y la contraseña en canales distintos es una práctica de seguridad estándar para este tipo de situaciones.'},
+          {cls:'fb-ok',head:'Correcto en principio, pero puede no ser viable.',body:'Esperar a TI es la respuesta más segura si el tiempo lo permite. En una situación de 30 minutos, puede no ser posible. Hay opciones intermedias (link con expiración + contraseña) que mantienen control sin depender de TI.',tip:'Vale la pena conocer estas opciones intermedias antes de que llegue la urgencia, no durante.'},
+        ],
+      },
+    ],
+  ],
+],
+en:[
+  // DOMAIN 0 — Passwords
+  [
+    // SUBTOPIC 0.0 — Creation & reuse
+    [
+      {
+        title:'You\'ve used the same password for your email, bank, and social networks for years because it\'s easy to remember.',
+        ctx:'A service you use announces it suffered a data breach. Your password was in the exposed database.',
+        opts:[
+          {t:'I change the password only on the service that was breached.',s:2},
+          {t:'I change the password on every service where I used it and enable additional verification.',s:4},
+          {t:'I wait to see if they tell me my account was affected.',s:1},
+          {t:'I change it for email and bank but leave social networks.',s:3},
+        ],
+        fb:[
+          {cls:'fb-ok',head:'Partially correct.',body:'You protected the most obvious one, but the attacker already has that password and can try it on every service where you reused it. One breach exposes everywhere you used the same key.',tip:'Practical rule: if you reused a password, treat it as compromised on every site that has it.'},
+          {cls:'fb-good',head:'Exactly right.',body:'A leaked password is compromised on every service using it. Changing everywhere and enabling a second factor closes the full risk. The attacker already has that key — the sooner you replace it everywhere, the better.',tip:'A password manager generates unique keys per service and remembers them for you — you wouldn\'t have this problem.'},
+          {cls:'fb-bad',head:'Waiting has a cost.',body:'Every hour that passes with that password active is time the attacker can use it. Don\'t wait for personal confirmation — if the service announced a breach, your password is already exposed.',tip:'On any breach notification, act the same day.'},
+          {cls:'fb-ok',head:'Good instinct, but incomplete.',body:'Social accounts can be used to impersonate you, access contacts or as a gateway to other services. If you used the same password there, they\'re at risk too.',tip:'No account is "unimportant" when changing it takes just a couple of minutes.'},
+        ],
+      },
+      {
+        title:'You\'re creating a new account on an online store.',
+        ctx:'The store asks you to create a password. You already have many accounts and remembering another one feels hard.',
+        opts:[
+          {t:'I use my usual password — it\'s hard to remember so many different ones.',s:1},
+          {t:'I create a variation: my usual password + the site name at the end.',s:2},
+          {t:'I generate a random password with a password manager.',s:4},
+          {t:'I create a long phrase unique to this site.',s:3},
+        ],
+        fb:[
+          {cls:'fb-bad',head:'This is the riskiest practice.',body:'If that store is hacked (and many are), the attacker immediately has access to all your services using the same password.',tip:'A password manager solves the problem: it generates and remembers unique passwords for you.'},
+          {cls:'fb-ok',head:'Better than reusing, but predictable.',body:'Attackers know this pattern. If they get your password from one site and see it ends in the service name, they\'ll try variations elsewhere.',tip:'A truly unique password has no relation to any of your other passwords.'},
+          {cls:'fb-good',head:'The best option.',body:'A manager generates long, random, unique passwords per site. You only need to remember one master password. It\'s the most secure and most convenient long-term solution.',tip:'Most devices already come with a built-in manager — you don\'t need to install anything extra.'},
+          {cls:'fb-ok',head:'Good approach, with a practical limit.',body:'A long unique phrase is much better than reusing. The challenge is keeping phrases truly different across 50+ accounts. A manager is the natural next level.',tip:'If you use phrases, make sure they\'re completely different from each other, not variations of the same pattern.'},
+        ],
+      },
+      {
+        title:'A friend tells you they use the same password — "but very complex" — on all their services, convinced that\'s secure.',
+        ctx:'They\'re right that complexity helps against brute-force attacks. But there\'s another risk they\'re not considering.',
+        opts:[
+          {t:'They\'re right — a complex password is enough protection.',s:1},
+          {t:'Complexity doesn\'t matter if the service where they use it is hacked and exposes the passwords.',s:4},
+          {t:'They should change it every month to be safer.',s:2},
+          {t:'It\'s only a risk if they use it on their bank.',s:3},
+        ],
+        fb:[
+          {cls:'fb-bad',head:'Complexity doesn\'t protect against breaches.',body:'A password can be very complex and still be exposed if the service storing it is hacked. Reuse is the problem, not complexity.',tip:'Complex + unique per service is the right combination.'},
+          {cls:'fb-good',head:'Exactly the key point.',body:'Complexity protects against brute-force attacks. But if a service is hacked and exposes passwords, complexity doesn\'t matter — the attacker already has the exact text and can try it on any other service.',tip:'That\'s why uniqueness per service is just as important as complexity.'},
+          {cls:'fb-ok',head:'Changing frequently isn\'t the solution.',body:'Changing on a calendar without a real breach is unnecessary work and leads to weaker passwords ("January2024", "February2024"). The key is uniqueness, not arbitrary frequency.',tip:'Change the password when there\'s a real reason: detected breach, compromised device.'},
+          {cls:'fb-ok',head:'The risk is on all services, not just the bank.',body:'If you reuse on email, social media, and bank, all are at risk. Email is often most critical because it\'s the recovery key for everything else.',tip:'Priority: main email > bank > social media.'},
+        ],
+      },
+    ],
+    // SUBTOPIC 0.1 — 2FA
+    [
+      {
+        title:'Your bank offers to enable two-step verification. They explain you\'ll need a code in addition to your password each time you log in.',
+        ctx:'Options: SMS code or authenticator app. It feels like it adds an inconvenient extra step.',
+        opts:[
+          {t:'I don\'t enable it — my strong password is enough.',s:1},
+          {t:'I enable it with SMS since it\'s simpler.',s:3},
+          {t:'I enable it with an authenticator app.',s:4},
+          {t:'I enable it only for transfers, not for login.',s:2},
+        ],
+        fb:[
+          {cls:'fb-bad',head:'A password alone isn\'t enough.',body:'Passwords get leaked, stolen through phishing, or captured on compromised devices. A second factor ensures that even with your password, without the current code access is impossible.',tip:'A second factor blocks over 99% of automated password attacks.'},
+          {cls:'fb-ok',head:'Good decision, with a minor limitation.',body:'SMS is convenient and much better than nothing. The only risk is SIM swapping (phone number theft), which is rare but possible. For most people, it\'s very reasonable protection.',tip:'If you ever want more security, migrating to an authenticator app is easy from the settings.'},
+          {cls:'fb-good',head:'The most secure option available.',body:'An authenticator app creates codes that only exist on your device, change every 30 seconds, and don\'t depend on your phone number or carrier. The extra step takes 3 seconds and multiplies your security.',tip:'Start with your main email and bank — those are the highest-impact accounts.'},
+          {cls:'fb-ok',head:'Better than nothing, but inconsistent.',body:'Login without protection is the entry point. If someone gets in with your password, they can already make transfers from inside. The second factor on login protects everything that comes after.',tip:'Enable it at login — that\'s where it matters most.'},
+        ],
+      },
+      {
+        title:'Your company enables mandatory second factor for corporate email access.',
+        ctx:'Your colleagues complain it\'s a hassle. You have to decide how to see it.',
+        opts:[
+          {t:'I agree with colleagues — it\'s unnecessary bureaucracy.',s:1},
+          {t:'I accept it because it\'s required, but wouldn\'t use it voluntarily.',s:2},
+          {t:'I understand it protects access even if someone steals my password.',s:4},
+          {t:'It only makes sense if I work with very confidential information.',s:3},
+        ],
+        fb:[
+          {cls:'fb-bad',head:'The inconvenience isn\'t bigger than the risk.',body:'A compromised corporate email exposes company information, contacts, private conversations and can be used for internal attacks. Those 3 extra seconds per login are worth that protection.',tip:'Think of it reversed: how much time would it take to resolve an incident if your email is hacked?'},
+          {cls:'fb-ok',head:'Using it without conviction leaves other gaps open.',body:'If you understand the value only at work but not in your personal life, your personal accounts remain exposed. Attackers don\'t distinguish between work and personal accounts.',tip:'Personal email is usually the master key to almost everything else — it deserves protection too.'},
+          {cls:'fb-good',head:'Exactly the right perspective.',body:'The second factor makes a stolen password insufficient to get in. Without the current code, the attacker has something useless. That\'s what protects even when the password has already been compromised.',tip:'Extend that same habit to your personal email and social networks — the risk is equally real.'},
+          {cls:'fb-ok',head:'The value doesn\'t depend on the level of confidentiality.',body:'Any unauthorized access to your email — even if you don\'t have "very confidential" information — can be used to impersonate you, access other services, or damage your reputation.',tip:'The second factor protects access itself, regardless of the content.'},
+        ],
+      },
+      {
+        title:'You receive a text: "Verification code: 582847. Do not share it." Seconds later a call from "technical support" asks for that code to "verify your identity".',
+        ctx:'The caller knows your name and the service name. They sound completely professional.',
+        opts:[
+          {t:'I give them the code — they seem legitimate and know who I am.',s:1},
+          {t:'I tell them I\'ll call the official service number myself and hang up.',s:4},
+          {t:'I ask them more questions to verify they\'re real before deciding.',s:2},
+          {t:'I hang up without saying anything and block the number.',s:3},
+        ],
+        fb:[
+          {cls:'fb-bad',head:'The message already gave you the answer: "Do not share it."',body:'That they know your name and the service doesn\'t make them legitimate — that information comes from data breaches or social media. That code is exactly what they need to complete access to your account.',tip:'No legitimate service will call you to ask for a code you just received. That is, by definition, social engineering.'},
+          {cls:'fb-good',head:'Correct. That\'s the answer.',body:'Hanging up and calling the official number yourself breaks the attacker\'s control over the conversation. If there\'s really a problem, the service will confirm it. If it was an attack, you avoided it completely.',tip:'The official number is always on your physical card, official site, or contract — never in a received message or call.'},
+          {cls:'fb-ok',head:'Better than giving the code, but not enough.',body:'Asking can get you information, but the attacker has prepared answers. Time is their ally — the code expires in minutes and the urgency they create works. Every second of conversation plays in their favor.',tip:'Real validation comes from the official channel, not from answers in the same unsolicited call.'},
+          {cls:'fb-ok',head:'You protected the code. Blocking is optional.',body:'What matters is not sharing the code. Blocking the number isn\'t necessary — attackers use disposable numbers. After hanging up, log into your account to check for unusual activity.',tip:'If you suspect your account may have been compromised, change the password and review active device sessions.'},
+        ],
+      },
+    ],
+    // SUBTOPIC 0.2 — Recovery codes
+    [
+      {
+        title:'You just enabled a second factor on your email. The system shows 10 emergency recovery codes and says: "Save them. You won\'t see them again."',
+        ctx:'These codes work if you lose your phone and can\'t receive the verification code. Without them, losing your phone could mean permanent loss of access.',
+        opts:[
+          {t:'I close without saving — I\'m unlikely to ever need them.',s:1},
+          {t:'I take a screenshot on my phone.',s:2},
+          {t:'I save them in my password manager.',s:4},
+          {t:'I print them and store them somewhere physically safe.',s:3},
+        ],
+        fb:[
+          {cls:'fb-bad',head:'This can leave you permanently locked out.',body:'Losing your phone without those codes means recovering access can take weeks and doesn\'t always work. Saving them takes a minute and completely prevents that scenario.',tip:'Rule: never close that screen without having saved the codes in at least one place.'},
+          {cls:'fb-ok',head:'Better than not saving, but vulnerable.',body:'If you lose your phone — exactly when you\'d need the codes — you also lose the screenshot. Plus, screenshots are accessible if someone has your phone.',tip:'Where you store the codes must be independent of the device you might lose.'},
+          {cls:'fb-good',head:'The best option.',body:'The password manager is encrypted, password-protected, and accessible from any device. It\'s exactly the right place for sensitive information you need when you least expect it.',tip:'Save them with a note: "Recovery codes — [service name] — [date]".'},
+          {cls:'fb-ok',head:'Works well.',body:'Physical paper has a real advantage: it can\'t be hacked. It\'s especially good for very critical accounts. The only risk is losing it or someone finding it.',tip:'Store it with other important documents in a secure place in your home.'},
+        ],
+      },
+      {
+        title:'You explain the importance of second factor to your sister. She says: "I enabled it but lost the recovery codes. What happens if I lose my phone?"',
+        ctx:'Your sister uses her email to recover passwords for other services. Losing access would be a serious problem.',
+        opts:[
+          {t:'Nothing — the service always has a way to recover access.',s:1},
+          {t:'She should disable the second factor to avoid that risk.',s:1},
+          {t:'She should generate new recovery codes now, before something happens.',s:4},
+          {t:'She can use her phone number as an alternative backup.',s:3},
+        ],
+        fb:[
+          {cls:'fb-bad',head:'The recovery process without codes is long and not guaranteed.',body:'Recovering access without the second factor or codes can take weeks and involves complex identity verification. Not something you want to discover in an emergency.',tip:'Better to resolve this now than when you can no longer get in.'},
+          {cls:'fb-bad',head:'Disabling removes the protection she already has.',body:'The solution to the risk of losing codes is not to eliminate the second factor — it\'s to generate new codes now while she can still access the account.',tip:'Most services allow regenerating recovery codes from security settings.'},
+          {cls:'fb-good',head:'Exactly what she should do.',body:'While she still has account access, she can go to security settings and regenerate new codes. This time she saves them correctly. Resolving this now takes 5 minutes.',tip:'Most services have it under Settings > Security > Recovery codes or similar.'},
+          {cls:'fb-ok',head:'A valid additional option, but doesn\'t replace the codes.',body:'Phone as backup is useful, but has the SIM swapping risk. Ideally have recovery codes as the primary layer and phone as additional.',tip:'Recovery codes are the most secure backup because they don\'t depend on any external service.'},
+        ],
+      },
+      {
+        title:'You\'re setting up a second factor for your bank account. The bank offers: authenticator app, SMS, or security questions. Which has the least real risk?',
+        ctx:'This isn\'t a preference question — it\'s about which has fewer technical failure points.',
+        opts:[
+          {t:'Security questions — only I know the answers.',s:1},
+          {t:'SMS — everyone uses it and it\'s always available.',s:2},
+          {t:'Authenticator app — it generates codes locally on the device.',s:4},
+          {t:'It doesn\'t matter, they all have the same security level.',s:1},
+        ],
+        fb:[
+          {cls:'fb-bad',head:'Security questions are the least secure option.',body:'Answers (pet name, hometown, etc.) are often on social media or in breaches. Plus, many services store them as plain text.',tip:'If a service only offers security questions, use random answers and save them in your manager.'},
+          {cls:'fb-ok',head:'SMS is convenient but has one failure point.',body:'SIM swapping (phone number theft) lets an attacker redirect your SMS. Not common, but a real risk especially for high-value accounts like banking.',tip:'For banking, if available, the authenticator app is the most robust option.'},
+          {cls:'fb-good',head:'Correct. The authenticator app has fewer failure points.',body:'Codes are generated locally on your device without depending on your carrier or a network. They can\'t be intercepted by SIM swapping or carrier failures. They change every 30 seconds.',tip:'Also save the recovery codes for the authenticator app — if you lose your phone, you\'ll need them.'},
+          {cls:'fb-bad',head:'They don\'t have the same security level.',body:'There are real technical differences between methods. Security questions are weakest, SMS has SIM swapping risk, and the authenticator app is most robust because it works locally.',tip:'Always choose the strongest available option — the additional effort is minimal compared to the benefit.'},
+        ],
+      },
+    ],
+    // SUBTOPIC 0.3 — Recognizing theft attempts
+    [
+      {
+        title:'You receive an email with subject: "Action required: your account will be suspended in 24 hours." The email has your bank\'s logo and a button that says "Verify account now".',
+        ctx:'The email arrived at 11pm. You feel pressure because you don\'t want to lose access to your account.',
+        opts:[
+          {t:'I click the button to verify before it\'s too late.',s:1},
+          {t:'I type the bank\'s URL manually in my browser and verify from there.',s:4},
+          {t:'I forward the email to a friend to see if they think it\'s real.',s:2},
+          {t:'I mark it as spam and delete it.',s:3},
+        ],
+        fb:[
+          {cls:'fb-bad',head:'Urgency is phishing\'s central tactic.',body:'Emails that create time pressure are designed to make you act before thinking. The button may lead to a site identical to the real one that captures your credentials the moment you type them.',tip:'Most important rule: never log into a bank account from a link in an email.'},
+          {cls:'fb-good',head:'Exactly right.',body:'By typing the URL yourself, you guarantee you\'re on the real site and not a copy. If there\'s a real suspension, you\'ll see it from your legitimate session. If nothing\'s there, the email was fake.',tip:'This same principle applies to any service: email, social media, payment platforms.'},
+          {cls:'fb-ok',head:'Good intention, wrong method.',body:'Your friend has no more information than you to know if the email is real. While waiting, if it was phishing, time works in the attacker\'s favor.',tip:'The doubt resolves in a minute: go directly to the official site and verify.'},
+          {cls:'fb-ok',head:'Correct outcome.',body:'Deleting without clicking protects against the immediate attack. To be more complete, also verify your account directly on the official site to confirm everything is fine.',tip:'Marking as phishing (not just spam) helps the email service protect other users.'},
+        ],
+      },
+      {
+        title:'A WhatsApp message from a known contact says: "I\'m sending you this link, there\'s something about you there." The message includes a shortened URL.',
+        ctx:'This contact doesn\'t normally send you this kind of thing. The shortened URL doesn\'t show the destination site.',
+        opts:[
+          {t:'I open the link because the message comes from someone I know.',s:1},
+          {t:'I ask them through another channel (call or direct message) if they sent it.',s:4},
+          {t:'I ask in the same WhatsApp what the link is before opening it.',s:3},
+          {t:'I open the link in incognito mode so it\'s safer.',s:2},
+        ],
+        fb:[
+          {cls:'fb-bad',head:'Known contacts\' accounts can be compromised.',body:'The message may come from your contact\'s account without them having sent it. Accounts get compromised and used to send malicious links to the entire contact list.',tip:'An unexpected link with generic text is a warning sign, regardless of who sends it.'},
+          {cls:'fb-good',head:'Correct — verifying through another channel is key.',body:'If your contact\'s account was compromised, the attacker controls that WhatsApp conversation and can respond as if they were them. A different channel (call, SMS, another app) breaks that control.',tip:'"Did you send this link?" by phone call is enough to confirm in 10 seconds.'},
+          {cls:'fb-ok',head:'Better than nothing, but with a risk.',body:'If your contact\'s account was compromised, the attacker can respond in the same WhatsApp pretending to be them. Verifying through the same channel doesn\'t guarantee you\'re talking to the real person.',tip:'To confirm suspicious links, use a different channel from the one where you received the message.'},
+          {cls:'fb-bad',head:'Incognito mode doesn\'t protect against malware or phishing.',body:'Incognito only prevents the browser from saving history locally. It doesn\'t protect against sites that steal credentials, download malicious files, or exploit browser vulnerabilities.',tip:'Incognito is for history privacy — not a security layer against malicious sites.'},
+        ],
+      },
+      {
+        title:'You receive an email from "support@service-client-bank.com" with your full name, customer number, and last 4 digits of your card. It asks you to update your data.',
+        ctx:'The email has all your real information. It seems impossible that it\'s fake if they know those details.',
+        opts:[
+          {t:'If they have my real information, the email must be legitimate.',s:1},
+          {t:'I go to the bank\'s official site directly to check if there\'s any pending update.',s:4},
+          {t:'I reply to the email asking for more information to confirm.',s:2},
+          {t:'I call the bank at my card\'s number to verify.',s:4},
+        ],
+        fb:[
+          {cls:'fb-bad',head:'Personal information doesn\'t guarantee authenticity.',body:'Name, customer number, and last card digits come from data breaches — data that many services have exposed. An attacker uses them precisely to give the email credibility.',tip:'Authenticity is verified through the channel you control, not by the information they have.'},
+          {cls:'fb-good',head:'Correct. The channel you control is the safe one.',body:'By going directly to the official site, any real update will appear in your profile. If nothing\'s pending, the email was fake. You don\'t need to know if the email was real to resolve this.',tip:'This principle works for any service: log in on your own and verify from inside.'},
+          {cls:'fb-ok',head:'Replying can give the attacker more information.',body:'By replying you confirm the address is active and that you took the email seriously. The attacker can use that response for more social engineering.',tip:'Don\'t reply to suspicious emails — verify through the official channel directly.'},
+          {cls:'fb-good',head:'Also correct.',body:'Calling the number on your physical card — which never changes — guarantees you\'re talking to the real bank. If there\'s a pending update, they\'ll confirm it. If not, the email was phishing.',tip:'The number on your card is always the safe channel, regardless of what any email says.'},
+        ],
+      },
+    ],
+  ],
+  // DOMAIN 1 — Backups (EN)
+  [
+    // SUBTOPIC 1.0 — Where to store files
+    [
+      {
+        title:'You have years of photos and important documents stored only on your laptop.',
+        ctx:'A colleague tells you their hard drive failed without warning and they lost everything. You start wondering if your files are really safe.',
+        opts:[
+          {t:'My files are on the laptop — if the drive fails, I\'ll figure it out.',s:1},
+          {t:'I have cloud active with automatic sync.',s:3},
+          {t:'I have cloud active and an external drive I disconnect when not in use.',s:4},
+          {t:'I have an external drive always connected to the laptop.',s:2},
+        ],
+        fb:[
+          {cls:'fb-bad',head:'A single point of failure is a real risk.',body:'Drives fail. It\'s not a remote possibility — it\'s a statistical certainty over time. A bump, a spill, a power surge, and everything disappears. "I\'ll figure it out" means costly recovery or permanent loss.',tip:'The 3-2-1 rule: 3 copies, on 2 different media, 1 offline or in another location.'},
+          {cls:'fb-ok',head:'Good first step, with one blind spot.',body:'Cloud covers hardware failure, theft, and physical damage. The risk it doesn\'t cover: if ransomware hits and sync is active, encrypted files sync to the cloud too before you notice.',tip:'A disconnected external drive is the layer ransomware can\'t reach.'},
+          {cls:'fb-good',head:'The most solid strategy for personal use.',body:'Cloud covers hardware failure, theft, and physical disasters. The disconnected external drive covers ransomware — it can\'t encrypt what isn\'t connected. This combination protects against virtually any scenario.',tip:'Update the external drive once a month. Put it in your calendar as a fixed reminder.'},
+          {cls:'fb-ok',head:'Better than nothing, with a specific risk.',body:'An always-connected external drive protects against internal drive failure. But in a ransomware attack, the malware encrypts everything it can reach — including the connected external drive.',tip:'Disconnect the drive when not actively using it. That simple habit makes it much safer.'},
+        ],
+      },
+      {
+        title:'You have active cloud sync for your documents. Does that mean if your laptop\'s drive fails, you\'re fully protected?',
+        ctx:'The cloud syncs automatically. It seems like all files should be safe.',
+        opts:[
+          {t:'Yes — if it\'s in the cloud, I have a complete backup of everything.',s:2},
+          {t:'It depends — cloud covers hardware failure but not ransomware if sync was active.',s:4},
+          {t:'No — the cloud is never safe for important files.',s:1},
+          {t:'Yes, but only if I pay for the paid plan, not the free one.',s:2},
+        ],
+        fb:[
+          {cls:'fb-ok',head:'Partially correct.',body:'Cloud covers drive failure and device loss. But if you suffer a ransomware attack, the encrypted files sync to the cloud too. For that scenario, you need a copy that isn\'t connected.',tip:'Cloud plus a disconnected external drive covers both scenarios.'},
+          {cls:'fb-good',head:'Exactly correct.',body:'Active sync is bidirectional. If ransomware encrypts your local files, those encrypted files sync to the cloud replacing the original versions. A disconnected external drive doesn\'t have that problem.',tip:'Some cloud services keep previous versions for a limited time — check if yours does.'},
+          {cls:'fb-bad',head:'Cloud does offer real protection for many scenarios.',body:'Drive failure, theft, physical damage — cloud covers all of that. The specific weak point is ransomware with active sync. It\'s not that cloud is insecure, it has a specific limitation.',tip:'Cloud is a valuable protection layer — complemented with an external drive it\'s even better.'},
+          {cls:'fb-ok',head:'The plan isn\'t the determining factor here.',body:'The problem of active sync with ransomware exists regardless of the plan. What makes the difference is having an offline copy, not the subscription level.',tip:'Focus on the backup strategy (cloud + external drive) more than the specific plan.'},
+        ],
+      },
+      {
+        title:'A family member works from home and stores all their work files on their laptop. They\'ve never set up any backup. What\'s the most useful and realistic advice for them to start today?',
+        ctx:'They\'re not technically savvy. You want the solution to be simple and something they\'ll actually do.',
+        opts:[
+          {t:'They should buy a NAS server for professional local backup.',s:1},
+          {t:'They should enable automatic cloud sync for their documents — it\'s the most accessible first step.',s:4},
+          {t:'They should manually copy files to USB every week.',s:2},
+          {t:'They should install enterprise backup software to automate everything.',s:2},
+        ],
+        fb:[
+          {cls:'fb-bad',head:'A NAS is overkill for a home user without experience.',body:'A NAS requires technical setup, maintenance, and significant cost. If they don\'t configure it well, they could end up less protected than with nothing.',tip:'The best solution is the one they\'ll actually use. For a non-technical person, automatic cloud is ideal.'},
+          {cls:'fb-good',head:'Correct — accessible and that actually works.',body:'Enabling automatic sync is something they can do in minutes, requires no constant maintenance, and works in the background without needing to remember. That\'s the right starting point.',tip:'Once cloud is active, the second step is adding a monthly external drive — but cloud already covers most scenarios.'},
+          {cls:'fb-ok',head:'Works, but depends on remembering.',body:'Manual copies are better than nothing. The problem is "every week" tends to become "when I remember", and in a failure they could lose weeks of work.',tip:'Automation is the most important factor for backup to be real. If they can forget about it and it still works, it\'s better.'},
+          {cls:'fb-ok',head:'Too complex to start with.',body:'Enterprise software has a learning curve that can overwhelm someone without technical experience. The probability of misconfiguration or abandonment is high.',tip:'Start simple: automatic cloud. If they want more control later, they can add tools.'},
+        ],
+      },
+    ],
+    // SUBTOPIC 1.1 — Verifying backups
+    [
+      {
+        title:'You\'ve had active cloud backup for a year. A colleague asks when you last verified that the backup actually works.',
+        ctx:'You realize you\'ve never tried to restore a file from the backup. You\'ve only seen the files listed in the cloud.',
+        opts:[
+          {t:'Seeing the files listed in the cloud is enough — if they\'re there, they\'re fine.',s:2},
+          {t:'I\'ve never tested it — if it\'s set up, it should work.',s:1},
+          {t:'This week I\'ll download a file from the backup and confirm I can open it.',s:4},
+          {t:'I\'ll check it when I have some free time.',s:2},
+        ],
+        fb:[
+          {cls:'fb-ok',head:'Seeing the files isn\'t the same as being able to restore them.',body:'A file can appear listed but be corrupted, incomplete, or in an incompatible format. The only real test of a backup is downloading and opening it successfully.',tip:'The difference between "it\'s there" and "I can recover it" is exactly what matters in an emergency.'},
+          {cls:'fb-bad',head:'An untested backup isn\'t a real backup.',body:'Cloud services can have sync errors, full quotas, or corrupted files without notifying you. Discovering it doesn\'t work right when you need it is the worst possible moment.',tip:'A 5-minute test today can save you weeks of work in an emergency.'},
+          {cls:'fb-good',head:'Exactly what you should do.',body:'Restoring an actual file — not just seeing it in the list — confirms that sync is active, files aren\'t corrupted, and you know how to do it when you truly need it.',tip:'Put it in your calendar: "Test backup — 5 min" once a month or quarterly.'},
+          {cls:'fb-ok',head:'"When I have free time" usually means never.',body:'Just like the backup itself, verification needs to be scheduled, not left for when there\'s time. Available time always has priorities that push it aside.',tip:'Schedule the reminder now, even if it\'s for next week. Intention without a date doesn\'t become action.'},
+        ],
+      },
+      {
+        title:'Which of these actions actually confirms your backup is working?',
+        ctx:'You have several files synced to the cloud for months.',
+        opts:[
+          {t:'Checking that the sync app shows "synced" or "up to date".',s:2},
+          {t:'Logging into the cloud and seeing the files listed with their names.',s:2},
+          {t:'Downloading a specific file from the backup and opening it successfully.',s:4},
+          {t:'Waiting for the system to notify you if there\'s an error.',s:1},
+        ],
+        fb:[
+          {cls:'fb-ok',head:'The "synced" status indicates the process ran, not that files are recoverable.',body:'The app can show it synced successfully but files can be corrupted on the server. They\'re two different things.',tip:'The only definitive test is being able to recover the file and use it.'},
+          {cls:'fb-ok',head:'Seeing the names confirms they exist, not that they work.',body:'A listed file can be corrupted, have the wrong size, or fail to open. The list is just a visual reference, not an integrity test.',tip:'The real test is: download + open + confirm content is intact.'},
+          {cls:'fb-good',head:'Correct. That\'s the only real test.',body:'Downloading a file and opening it successfully confirms the entire process works: upload to server was successful, file isn\'t corrupted, and download works. There are no shortcuts for this verification.',tip:'Choose representative files — a document, a photo, a spreadsheet — to cover different types.'},
+          {cls:'fb-bad',head:'Errors don\'t always generate automatic alerts.',body:'Many file integrity problems don\'t produce visible alerts. A file can be corruptly synced without the system detecting it.',tip:'Don\'t rely on the system notifying you — do the verification actively.'},
+        ],
+      },
+      {
+        title:'Your company has had automatic backup configured for 2 years. The IT team assumes everything works because they\'ve never received error alerts. What\'s missing?',
+        ctx:'The backup runs in the background, no visible interruptions, and the dashboard shows "active".',
+        opts:[
+          {t:'Nothing — if there have been no error alerts in 2 years, the backup works.',s:1},
+          {t:'They should increase backup frequency to more times per day.',s:2},
+          {t:'They should do a periodic test restoration to verify files are recoverable.',s:4},
+          {t:'They should change backup providers for safety.',s:1},
+        ],
+        fb:[
+          {cls:'fb-bad',head:'Absence of alerts doesn\'t confirm it works.',body:'Backup systems can run without apparent errors but with corrupted files, incomplete configurations, or integrity problems that only appear when trying to restore.',tip:'In companies, a test restoration is recommended at least quarterly.'},
+          {cls:'fb-ok',head:'Frequency is a factor, but not the problem here.',body:'Increasing frequency improves how recent the backup data is. But if frequent backups are corrupted, frequency doesn\'t help. The problem is they\'ve never verified that they work.',tip:'First verify what you have works; then optimize frequency.'},
+          {cls:'fb-good',head:'Exactly what\'s missing.',body:'In 2 years without a test restoration, they don\'t know if files are actually recoverable. The active dashboard confirms the process runs, not that it produces usable files. A restoration test is the only real validation.',tip:'The test should include restoring to a different environment, not the same source location, to simulate a real emergency.'},
+          {cls:'fb-bad',head:'Changing providers doesn\'t solve the real problem.',body:'The problem is lack of verification, not the provider. With any provider, without periodic test restorations, they don\'t know if the backup works.',tip:'Establish a testing protocol before considering provider changes.'},
+        ],
+      },
+    ],
+    // SUBTOPIC 1.2 — Ransomware response
+    [
+      {
+        title:'On a Monday morning you open your laptop and all files have a strange extension. A message says: "Your files were encrypted. Pay to recover them."',
+        ctx:'The laptop is still connected to your home WiFi network, where other devices are also connected: your phone, your child\'s tablet, and your work laptop.',
+        opts:[
+          {t:'I search online for how to decrypt the files from this same laptop.',s:1},
+          {t:'I immediately disconnect the laptop from the network and then assess options.',s:4},
+          {t:'I pay the ransom — I want to recover the files as quickly as possible.',s:1},
+          {t:'I turn off the laptop and take it to a technician.',s:2},
+        ],
+        fb:[
+          {cls:'fb-bad',head:'Searching for solutions with the device connected allows damage to continue.',body:'While the laptop is on the network, ransomware can spread to other devices. Plus, some "solutions" online are more malware disguised as recovery tools.',tip:'First step always: disconnect from the network. Then investigate from another clean device.'},
+          {cls:'fb-good',head:'Correct. That\'s the first step.',body:'Disconnecting from the network contains the damage: ransomware can\'t spread to other devices, can\'t communicate with the attacker\'s server, and can\'t encrypt more files on shared network. You gain time to assess calmly.',tip:'After: don\'t pay, contact technical support, and check if you have a disconnected external backup.'},
+          {cls:'fb-bad',head:'Paying doesn\'t guarantee recovery.',body:'Paying funds attackers to keep operating, doesn\'t guarantee they\'ll send the decryption key, and marks you as someone willing to pay. While deliberating, the laptop stays on the network and ransomware stays active.',tip:'First step: disconnect. Paying is always the last resort and rarely works.'},
+          {cls:'fb-ok',head:'Better than nothing, but there\'s a more urgent step first.',body:'Turning off can stop active encryption, but if the laptop stays on the network before turning off, ransomware may have already spread to other devices. Disconnect from network first, then turn off.',tip:'Correct order: 1) Disconnect from network, 2) Assess whether to turn off, 3) Contact support.'},
+        ],
+      },
+      {
+        title:'Why shouldn\'t you immediately turn off a ransomware-infected device?',
+        ctx:'The instinct is to turn off to "stop" the attack. But there\'s a technical reason to think twice.',
+        opts:[
+          {t:'Because ransomware activates faster on restart.',s:2},
+          {t:'Because turning off can destroy forensic evidence in RAM that helps identify the ransomware type.',s:4},
+          {t:'There\'s no reason — turning off is always the first thing to do.',s:1},
+          {t:'Because the hard drive gets damaged if turned off during encryption.',s:2},
+        ],
+        fb:[
+          {cls:'fb-ok',head:'Not the main reason.',body:'Ransomware doesn\'t "activate faster" on restart — most are designed to continue on boot. But it\'s not the most important technical reason not to turn off immediately.',tip:'The real reason has to do with evidence that exists in active system memory.'},
+          {cls:'fb-good',head:'Correct.',body:'RAM contains information about the active ransomware process, possible temporary decryption keys, and details that help identify the variant. Forensic analysis while the device is on can recover valuable data. Turning off destroys that information.',tip:'In a business context, a forensics specialist can analyze RAM before turning off. At home, the priority is disconnecting from the network and contacting support.'},
+          {cls:'fb-bad',head:'Turning off can have technical consequences.',body:'While it stops active encryption, turning off eliminates RAM information that could help recover files or identify the ransomware. In business environments, forensics specialists prefer to work with the device on.',tip:'The immediate priority is disconnecting from the network, not necessarily turning off.'},
+          {cls:'fb-ok',head:'Not the main risk here.',body:'Modern drives handle shutdown during writing without permanent physical damage. The reason not to turn off immediately is to preserve forensic evidence in RAM, not to protect the hardware.',tip:'The hardware is fine — what\'s lost when turning off is information about the attack that could help with recovery.'},
+        ],
+      },
+      {
+        title:'You have an external drive backup updated 3 days ago. You suffer a ransomware attack. What\'s the correct sequence of actions?',
+        ctx:'The external drive wasn\'t connected at the time of the attack. You have access to another clean device.',
+        opts:[
+          {t:'1) Pay the ransom 2) Restore from backup if it doesn\'t work.',s:1},
+          {t:'1) Try to decrypt from the infected device 2) Restore if that fails.',s:1},
+          {t:'1) Disconnect from network 2) Report 3) Restore from external backup on a clean device.',s:4},
+          {t:'1) Connect the external drive to the infected device 2) Copy encrypted files to the drive.',s:1},
+        ],
+        fb:[
+          {cls:'fb-bad',head:'Paying first is the worst option.',body:'Paying doesn\'t guarantee recovery and funds the attacker. If you have a working backup, there\'s no reason to pay. Ransom is always the last resort, not the first.',tip:'With a verified backup from 3 days ago, the maximum loss is those 3 days — recoverable.'},
+          {cls:'fb-bad',head:'Using the infected device to decrypt is risky.',body:'The infected device may have more malware beyond the visible ransomware. Using it actively can worsen the situation or contaminate more files.',tip:'Always work from a clean device when recovering from an infected system.'},
+          {cls:'fb-good',head:'The correct sequence.',body:'Disconnecting from the network contains the damage. Reporting to IT or support documents the incident and gets expert guidance. Restoring from the external drive (which wasn\'t connected, so wasn\'t encrypted) on a clean device is the safest recovery.',tip:'Verify the recovery device is completely clean before connecting the external drive.'},
+          {cls:'fb-bad',head:'Connecting the external drive to the infected device is risky.',body:'The infected device can contaminate the external drive — ransomware or additional malware can spread when connecting any storage device.',tip:'Never connect your backup to an infected device. Always use a clean device for restoration.'},
+        ],
+      },
+    ],
+    // SUBTOPIC 1.3 — Sharing documents
+    [
+      {
+        title:'A work colleague asks you for a project document. You generate a public link because it\'s faster than asking for their email.',
+        ctx:'The document has internal project information: timelines, estimated budgets, client names.',
+        opts:[
+          {t:'The public link is fine — only my colleague has the link.',s:1},
+          {t:'Better to share directly with my colleague\'s email account.',s:4},
+          {t:'I generate the link with a 48-hour expiration.',s:3},
+          {t:'I send the file as an email attachment.',s:3},
+        ],
+        fb:[
+          {cls:'fb-bad',head:'"Only my colleague has the link" is a fragile assumption.',body:'A link can be accidentally forwarded, appear in email history, be indexed in internal search engines, or be exposed if your colleague\'s device is compromised. Client information and budgets deserve more control.',tip:'The right question: who should be able to see this? If the answer is "only my colleague," share only with them.'},
+          {cls:'fb-good',head:'The option with the most control.',body:'Sharing with a specific account means only that person can access, you have a record of who has access, and you can revoke when needed. It takes the same seconds as generating a public link.',tip:'In most platforms: click "share" → type the email → done. No slower than a link.'},
+          {cls:'fb-ok',head:'Better than a permanent link.',body:'Expiration limits exposure time. But during those 48 hours, anyone with the link can access without restriction. For documents with client data, controlling who accesses is more important than the time.',tip:'Combine expiration with specific account access when content is sensitive.'},
+          {cls:'fb-ok',head:'Controlled, with a limitation.',body:'Email attachment only reaches who you send it to. The downside: it stays in both email histories indefinitely, and if the document is updated, your colleague has an outdated version.',tip:'For documents that get updated, cloud sharing with specific permissions is more manageable.'},
+        ],
+      },
+      {
+        title:'What\'s the main risk of sharing documents with links that don\'t require signing in?',
+        ctx:'Login-free links are convenient and widely used.',
+        opts:[
+          {t:'Files download more slowly.',s:1},
+          {t:'The link can reach unauthorized people without you knowing.',s:4},
+          {t:'The cloud charges more for that type of link.',s:1},
+          {t:'Files can\'t be edited with that type of link.',s:2},
+        ],
+        fb:[
+          {cls:'fb-bad',head:'Speed has no relation to the type of link.',body:'The risk of public links isn\'t technical performance — it\'s access control.',tip:'The problem is who can see it, not how fast it downloads.'},
+          {cls:'fb-good',head:'Correct. Access control is the central risk.',body:'A link without authentication can be forwarded to anyone, copied from an email history, found in a search, or exposed if any device that received it is compromised. You have no visibility or control over who ends up having that link.',tip:'The alternative: sharing with specific accounts gives you the exact list of who can access.'},
+          {cls:'fb-bad',head:'Cloud pricing doesn\'t work that way.',body:'Cloud pricing models aren\'t based on link type. The risk is unauthorized access, not financial.',tip:'Focus on who can see the file — that\'s the real risk.'},
+          {cls:'fb-ok',head:'Edit permissions are separate from link type.',body:'You can generate a public read-only or edit link — they\'re independent settings. The main risk isn\'t editing but who can access the link.',tip:'Access control (who can view) is more important than edit control (what they can do).'},
+        ],
+      },
+      {
+        title:'Your company has a policy of sharing internal documents only with corporate accounts, no public links. An external client needs a file urgently and doesn\'t have a corporate account.',
+        ctx:'The file has contractual information. The client needs it in the next 30 minutes.',
+        opts:[
+          {t:'I generate a public link because urgency justifies bypassing the policy.',s:1},
+          {t:'I send the file as an email attachment to the client.',s:3},
+          {t:'I generate a link with 2-hour expiration and a password, and give the password separately.',s:4},
+          {t:'I tell the client to wait until IT can create formal access.',s:2},
+        ],
+        fb:[
+          {cls:'fb-bad',head:'Urgency doesn\'t justify removing security controls.',body:'Policies exist precisely for situations under pressure — when urgency makes it tempting to bypass them. A public link with contractual information can reach unauthorized third parties.',tip:'Urgency should activate creativity within controls, not the elimination of controls.'},
+          {cls:'fb-ok',head:'Reasonable for urgencies, with limitations.',body:'Email attachment reaches the client directly without a public link. The downside: it stays in email history without expiration and if forwarded, you have no control.',tip:'If the attachment works for this case, consider adding a password to the file for an extra layer.'},
+          {cls:'fb-good',head:'The solution that balances urgency and control.',body:'A short expiration link limits exposure time. The password sent separately (through another channel, like a call or SMS) ensures only who you contacted can open it. Meets the urgency without eliminating controls.',tip:'Separating the link and password across different channels is a standard security practice for these situations.'},
+          {cls:'fb-ok',head:'Correct in principle, but may not be feasible.',body:'Waiting for IT is the safest answer if time allows. In a 30-minute situation, it may not be possible. There are intermediate options (link with expiration + password) that maintain control without depending on IT.',tip:'Worth knowing these intermediate options before urgency arrives, not during.'},
+        ],
+      },
+    ],
+  ],
+],
+};
+
+// ═══════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════
+let lang = 'es';
+let domainIdx = 0;     // 0 or 1
+let subtopicIdx = 0;   // 0-3
+let attemptIdx = 0;    // 0-2 (max 3 attempts per subtopic)
+let subtopicResults2 = [[null,null,null,null],[null,null,null,null]];
+
+const STORAGE_KEY = 'cyberad_results';
+
+// ═══════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════
+function currentQ() {
+  return QB[lang][domainIdx][subtopicIdx][Math.min(attemptIdx, 2)];
+}
+
+function totalSubtopics() { return 4; }
+
+function getBadge(attempts, lastCorrect) {
+  if (!lastCorrect) return 'developing';
+  if (attempts === 1) return 'optimal';
+  return 'good';
+}
+
+// ═══════════════════════════════════════════════════════
+// LANG
+// ═══════════════════════════════════════════════════════
+function setLang(l) {
+  lang = l;
+  document.querySelectorAll('.lbtn').forEach(b => b.classList.toggle('active', b.textContent === l.toUpperCase()));
+  document.documentElement.lang = l;
+  renderHeader();
+  const active = document.querySelector('.screen.active').id;
+  if (active === 'scr-welcome') renderWelcome();
+}
+
+// ═══════════════════════════════════════════════════════
+// RENDER HEADER
+// ═══════════════════════════════════════════════════════
+function renderHeader() {
+  const tx = TX[lang];
+  document.getElementById('hd-tag').textContent = tx.tag;
+  document.getElementById('hd-title').innerHTML = tx.title;
+  document.getElementById('hd-sub').textContent = tx.sub;
+}
+
+// ═══════════════════════════════════════════════════════
+// WELCOME
+// ═══════════════════════════════════════════════════════
+function renderWelcome() {
+  const tx = TX[lang];
+  document.getElementById('hd-sub').textContent = tx.sub;
+  document.getElementById('w-how-title').textContent = tx.howTitle;
+  document.getElementById('w-start').textContent = tx.wStart;
+  document.getElementById('w-duration').textContent = tx.duration || (lang === 'es' ? 'Duración estimada: 10–20 min' : 'Estimated duration: 10–20 min');
+  const cards = document.getElementById('w-dom-cards');
+  cards.innerHTML = '';
+  tx.domains.forEach((name, di) => {
+    cards.innerHTML += `<div class="dom-card"><div class="dom-card-icon">${tx.domainIcons[di]}</div><div class="dom-card-name">${name}</div><div class="dom-card-meta">${tx.domainMeta ? tx.domainMeta[di] : (lang==='es'?'4 sub-temas · hasta 12 situaciones':'4 sub-topics · up to 12 situations')}</div></div>`;
+  });
+  const rows = document.getElementById('w-how-rows');
+  rows.innerHTML = '';
+  tx.howRows.forEach(r => {
+    rows.innerHTML += `<div class="how-row"><div class="how-icon">${r.icon}</div><div class="how-text">${r.text}</div></div>`;
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+// DOMAIN TRACK
+// ═══════════════════════════════════════════════════════
+function renderDomainTrack() {
+  const tx = TX[lang];
+  const el = document.getElementById('dtrack');
+  el.innerHTML = '';
+  tx.domains.forEach((name, di) => {
+    const done = di < domainIdx || (di === domainIdx && subtopicIdx >= 4);
+    const active = di === domainIdx && subtopicIdx < 4;
+    const div = document.createElement('div');
+    div.className = 'dtrack-item' + (active ? ' active' : done ? ' done' : '');
+    div.innerHTML = `<div class="dtrack-icon">${tx.domainIcons[di]}</div><div class="dtrack-name">${name}</div>`;
+    el.appendChild(div);
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+// SUBTOPIC PROGRESS
+// ═══════════════════════════════════════════════════════
+function renderSubtopicProgress() {
+  const el = document.getElementById('stprog');
+  el.innerHTML = '';
+  for (let si = 0; si < 4; si++) {
+    const res = subtopicResults2[domainIdx][si];
+    const pip = document.createElement('div');
+    pip.className = 'stpip';
+    if (res) {
+      pip.classList.add(res.badge === 'optimal' ? 'done-good' : res.badge === 'good' ? 'done-ok' : 'done-weak');
+    } else if (si === subtopicIdx) {
+      pip.classList.add('active');
+    }
+    el.appendChild(pip);
+  }
+  const label = document.createElement('span');
+  label.className = 'stlabel';
+  label.textContent = TX[lang].subtopics[domainIdx][subtopicIdx];
+  el.appendChild(label);
+}
+
+// ═══════════════════════════════════════════════════════
+// ATTEMPT DOTS
+// ═══════════════════════════════════════════════════════
+function renderAttemptDots() {
+  const el = document.getElementById('attempt-row');
+  el.innerHTML = '';
+  for (let i = 0; i < 3; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'adot';
+    if (i < attemptIdx) dot.classList.add('used-bad');
+    else if (i === attemptIdx) dot.classList.add('current');
+    el.appendChild(dot);
+  }
+  const lbl = document.createElement('span');
+  lbl.className = 'alabel';
+  lbl.textContent = TX[lang].attemptLabel + ' ' + (attemptIdx + 1) + ' / 3';
+  el.appendChild(lbl);
+}
+
+// ═══════════════════════════════════════════════════════
+// CONTEXT CHIP
+// ═══════════════════════════════════════════════════════
+function renderCtxChip() {
+  const tx = TX[lang];
+  const el = document.getElementById('ctx-chip-wrap');
+  el.innerHTML = '';
+  let cls, label;
+  if (attemptIdx === 0) { cls = 'ctx-first'; label = tx.ctxLabels.first; }
+  else if (attemptIdx === 1) { cls = 'ctx-retry'; label = tx.ctxLabels.retry.replace('{n}', '2'); }
+  else { cls = 'ctx-final'; label = tx.ctxLabels.final; }
+  el.innerHTML = `<div class="ctx-chip ${cls}">${label}</div>`;
+}
+
+// ═══════════════════════════════════════════════════════
+// RENDER SCENARIO
+// ═══════════════════════════════════════════════════════
+function renderScenario() {
+  renderDomainTrack();
+  renderSubtopicProgress();
+  renderAttemptDots();
+  renderCtxChip();
+
+  const q = currentQ();
+  const letters = ['A','B','C','D'];
+  const wrap = document.getElementById('sc-wrap');
+  wrap.innerHTML = '';
+
+  const card = document.createElement('div');
+  card.className = 'sc-card';
+  card.innerHTML = `
+    <div class="sc-head">
+      <div class="sc-subtag">${TX[lang].subtopics[domainIdx][subtopicIdx]}</div>
+      <div class="sc-title">${q.title}</div>
+    </div>
+    <div class="sc-ctx">${q.ctx}</div>
+    <div class="opts-wrap" id="opts-wrap"></div>
+    <div class="fb" id="fb-el"></div>`;
+  wrap.appendChild(card);
+
+  const optsWrap = document.getElementById('opts-wrap');
+  q.opts.forEach((opt, oi) => {
+    const div = document.createElement('div');
+    div.className = 'opt';
+    div.innerHTML = `<div class="opt-letter">${letters[oi]}</div><div class="opt-text">${opt.t}</div>`;
+    div.onclick = () => pickAnswer(oi);
+    optsWrap.appendChild(div);
+  });
+
+  document.getElementById('cont-btn').className = 'btn btn-primary btn-full cont-btn';
+  document.getElementById('cont-btn').textContent = TX[lang].contBtn;
+}
+
+// ═══════════════════════════════════════════════════════
+// PICK ANSWER
+// ═══════════════════════════════════════════════════════
+function pickAnswer(oi) {
+  const q = currentQ();
+  const opts = document.querySelectorAll('#opts-wrap .opt');
+  const fb = document.getElementById('fb-el');
+  const score = q.opts[oi].s;
+  const fbData = q.fb[oi];
+  const correct = score === 4;
+
+  opts.forEach(o => o.classList.add('locked'));
+  const cls = score === 4 ? 'sel-good' : score === 3 ? 'sel-ok' : 'sel-bad';
+  opts[oi].classList.add(cls);
+
+  if (!correct) {
+    q.opts.forEach((opt, i) => { if (opt.s === 4) opts[i].classList.add('best-show'); });
+  }
+
+  fb.className = 'fb show ' + fbData.cls;
+  fb.innerHTML = `<strong>${fbData.head}</strong><p>${fbData.body}</p>${fbData.tip ? '<div class="tip">💡 ' + fbData.tip + '</div>' : ''}`;
+
+  // update attempt dot
+  const dots = document.querySelectorAll('.adot');
+  if (dots[attemptIdx]) {
+    dots[attemptIdx].classList.remove('current');
+    dots[attemptIdx].classList.add(correct ? 'used-good' : 'used-bad');
+  }
+
+  document.getElementById('cont-btn').classList.add('show');
+
+  // store result locally
+  if (!window._currentResult) window._currentResult = { attempts: 0, correct: false };
+  window._currentResult.attempts = attemptIdx + 1;
+  window._currentResult.correct = correct;
+  window._lastCorrect = correct;
+}
+
+// ═══════════════════════════════════════════════════════
+// CONTINUE FLOW
+// ═══════════════════════════════════════════════════════
+function continueFlow() {
+  const correct = window._lastCorrect;
+  const isLastAttempt = attemptIdx >= 2;
+
+  if (correct || isLastAttempt) {
+    // save subtopic result
+    const badge = getBadge(window._currentResult.attempts, correct);
+    subtopicResults2[domainIdx][subtopicIdx] = {
+      badge,
+      attempts: window._currentResult.attempts,
+      correct,
+    };
+    window._currentResult = null;
+    window._lastCorrect = false;
+    attemptIdx = 0;
+    subtopicIdx++;
+
+    if (subtopicIdx >= 4) {
+      // domain done
+      subtopicIdx = 0;
+      domainIdx++;
+      if (domainIdx >= 2) {
+        showResults();
+        return;
+      }
+    }
+  } else {
+    attemptIdx++;
+  }
+
+  window.scrollTo(0, 0);
+  document.documentElement.scrollTop = 0;
+  renderScenario();
+}
+
+// ═══════════════════════════════════════════════════════
+// RESULTS
+// ═══════════════════════════════════════════════════════
+function showResults() {
+  switchScreen('scr-results');
+  const tx = TX[lang];
+  document.getElementById('r-title').textContent = tx.rTitle;
+  document.getElementById('r-sub').textContent = tx.rSub;
+  document.getElementById('r-restart').textContent = tx.rRestart;
+
+  const rDomains = document.getElementById('r-domains');
+  rDomains.innerHTML = `<div class="result-section"><h3>${tx.rDomainLabel}</h3></div>`;
+  const sec = rDomains.querySelector('.result-section');
+
+  tx.domains.forEach((dname, di) => {
+    const dhead = document.createElement('p');
+    dhead.style.cssText = 'font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);margin:14px 0 6px';
+    dhead.textContent = tx.domainIcons[di] + '  ' + dname;
+    sec.appendChild(dhead);
+
+    tx.subtopics[di].forEach((stname, si) => {
+      const res = subtopicResults2[di][si];
+      if (!res) return;
+      const badge = res.badge;
+      const badgeCls = badge === 'optimal' ? 'badge-optimal' : badge === 'good' ? 'badge-good' : 'badge-developing';
+      const badgeLabel = tx.badges[badge];
+      const attemptsText = res.attempts + (lang === 'es' ? (res.attempts === 1 ? ' intento' : ' intentos') : (res.attempts === 1 ? ' attempt' : ' attempts'));
+      const row = document.createElement('div');
+      row.className = 'st-result';
+      row.innerHTML = `<div class="st-icon">${res.correct ? '✅' : '⚠️'}</div>
+        <div class="st-info"><div class="st-name">${stname}</div><div class="st-attempts">${attemptsText}</div></div>
+        <div class="st-badge ${badgeCls}">${badgeLabel}</div>`;
+      sec.appendChild(row);
+    });
+  });
+
+  // Recommendations for weak areas
+  const weakAreas = [];
+  const recs = {
+    es: [
+      ['Usa contraseñas únicas por servicio — un gestor de contraseñas hace esto automático y sin esfuerzo.','Ante cualquier filtración, cambia esa contraseña en todos los servicios donde la usaste ese mismo día.'],
+      ['Activa el segundo factor en tu correo principal hoy — es el punto de entrada más crítico.','Una app generadora de códigos es más segura que SMS y tarda los mismos segundos.'],
+      ['Guarda los códigos de recuperación en un lugar independiente del dispositivo que podrías perder.','Genéralos de nuevo ahora si no sabes dónde están — mientras tengas acceso, puedes hacerlo.'],
+      ['Nunca entres a un servicio desde un enlace en un correo — escribe la URL tú mismo.','Ante un código no solicitado + llamada pidiéndolo, cuelga y llama al número oficial.'],
+      ['Nube + disco externo desconectado cubre los dos escenarios principales: fallo de hardware y ransomware.','El primer paso ante ransomware es desconectar de la red, no pagar ni buscar soluciones en internet.'],
+      ['Un respaldo que no se ha probado no es un respaldo real — descarga un archivo y ábrelo para confirmarlo.','Programa una verificación trimestral en el calendario — sin fecha no se convierte en acción.'],
+      ['Desconectar de la red es el primer paso ante ransomware — contiene el daño antes de que se propague.','Un disco externo desconectado es la única capa que el ransomware no puede alcanzar.'],
+      ['Comparte documentos con cuentas específicas, no con links públicos — tarda lo mismo y da mucho más control.','Un link con expiración + contraseña separada es la solución para urgencias sin eliminar el control.'],
+    ],
+    en: [
+      ['Use unique passwords per service — a password manager makes this automatic and effortless.','On any breach, change that password on every service where you used it that same day.'],
+      ['Enable second factor on your main email today — it\'s the most critical entry point.','An authenticator app is more secure than SMS and takes the same seconds.'],
+      ['Store recovery codes somewhere independent of the device you might lose.','Generate them again now if you don\'t know where they are — while you have access, you can.'],
+      ['Never log into a service from a link in an email — type the URL yourself.','On an unsolicited code + call asking for it, hang up and call the official number.'],
+      ['Cloud + disconnected external drive covers the two main scenarios: hardware failure and ransomware.','First step with ransomware is to disconnect from the network, not pay or search for solutions online.'],
+      ['A backup that hasn\'t been tested is not a real backup — download a file and open it to confirm.','Schedule a quarterly verification on your calendar — without a date it doesn\'t become action.'],
+      ['Disconnecting from the network is the first step with ransomware — contains damage before it spreads.','A disconnected external drive is the only layer ransomware can\'t reach.'],
+      ['Share documents with specific accounts, not public links — takes the same time and gives much more control.','A link with expiration + separate password is the solution for urgencies without removing control.'],
+    ],
+  };
+
+  const recsByIndex = { es: recs.es, en: recs.en };
+  const recWrap = document.getElementById('r-recs');
+  recWrap.innerHTML = '';
+  let hasWeak = false;
+
+  tx.domains.forEach((dname, di) => {
+    tx.subtopics[di].forEach((stname, si) => {
+      const res = subtopicResults2[di][si];
+      if (res && res.badge === 'developing') {
+        hasWeak = true;
+        const globalIdx = di * 4 + si;
+        const tips = recsByIndex[lang][globalIdx] || [];
+        const card = document.createElement('div');
+        card.className = 'rec-card';
+        card.innerHTML = `<h4>⚠️ ${stname}</h4>${tips.map(t => '<p>→ ' + t + '</p>').join('')}`;
+        recWrap.appendChild(card);
+      }
+    });
+  });
+
+  if (hasWeak) {
+    const h = document.createElement('h3');
+    h.style.cssText = 'font-size:15px;font-weight:600;margin:24px 0 6px';
+    h.textContent = tx.rRecTitle;
+    recWrap.insertBefore(h, recWrap.firstChild);
+    const sub = document.createElement('p');
+    sub.style.cssText = 'font-size:13px;color:var(--text2);margin-bottom:14px';
+    sub.textContent = tx.rRecSub;
+    recWrap.insertBefore(sub, recWrap.children[1]);
+  }
+
+  renderSaveBanner();
+  renderHistory();
+}
+
+// ═══════════════════════════════════════════════════════
+// SAVE / DOWNLOAD
+// ═══════════════════════════════════════════════════════
+function getSaved() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch { return []; }
+}
+
+function saveResults() {
+  const tx = TX[lang];
+  const entry = {
+    date: new Date().toLocaleString(),
+    lang: lang.toUpperCase(),
+    domains: TX[lang].domains.map((dname, di) => ({
+      domain: dname,
+      subtopics: TX[lang].subtopics[di].map((stname, si) => {
+        const r = subtopicResults2[di][si];
+        return { subtopic: stname, badge: r ? r.badge : 'n/a', attempts: r ? r.attempts : 0 };
+      }),
+    })),
+  };
+  const saved = getSaved();
+  saved.unshift(entry);
+  if (saved.length > 30) saved.pop();
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+  renderSaveBanner(true);
+  renderHistory();
+}
+
+function downloadJSON() {
+  const saved = getSaved();
+  if (!saved.length) return;
+  const blob = new Blob([JSON.stringify(saved, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'ciberseguridad_adaptativa_' + new Date().toISOString().slice(0, 10) + '.json';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function clearHistory() {
+  localStorage.removeItem(STORAGE_KEY);
+  renderSaveBanner(false);
+  renderHistory();
+}
+
+function renderSaveBanner(saved = false) {
+  const tx = TX[lang];
+  const existing = document.getElementById('save-banner');
+  if (existing) existing.remove();
+  const hasSaved = getSaved().length > 0;
+  const banner = document.createElement('div');
+  banner.id = 'save-banner';
+  banner.className = 'save-banner';
+  banner.innerHTML = `<p><strong>${saved ? tx.savedOk : tx.saveLabel}</strong> — ${tx.saveDesc}</p>
+    <div class="save-actions">
+      ${!saved ? `<button class="btn btn-sm btn-primary" onclick="saveResults()">${tx.saveLabel}</button>` : ''}
+      ${hasSaved ? `<button class="btn btn-sm" onclick="downloadJSON()">${tx.downloadLabel}</button>` : ''}
+      ${hasSaved ? `<button class="btn btn-sm btn-ghost" onclick="clearHistory()">${tx.clearLabel}</button>` : ''}
+    </div>`;
+  document.getElementById('save-wrap').appendChild(banner);
+}
+
+function renderHistory() {
+  const tx = TX[lang];
+  const wrap = document.getElementById('hist-wrap');
+  wrap.innerHTML = '';
+  const saved = getSaved();
+  if (!saved.length) return;
+  const panel = document.createElement('div');
+  panel.className = 'results-panel';
+  panel.innerHTML = `<h3>${tx.histTitle}</h3>`;
+  saved.forEach(e => {
+    const row = document.createElement('div');
+    row.className = 're';
+    const summary = e.domains ? e.domains.map(d =>
+      d.subtopics.filter(s => s.badge === 'developing').length + ' ⚠'
+    ).join(' / ') : '';
+    row.innerHTML = `<span class="re-meta">${e.date} · ${e.lang}</span><span class="re-score">${summary}</span>`;
+    panel.appendChild(row);
+  });
+  wrap.appendChild(panel);
+}
+
+// ═══════════════════════════════════════════════════════
+// SCREENS
+// ═══════════════════════════════════════════════════════
+function switchScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+  document.documentElement.scrollTop = 0;
+}
+
+function startTool() {
+  domainIdx = 0; subtopicIdx = 0; attemptIdx = 0;
+  subtopicResults2 = [[null,null,null,null],[null,null,null,null]];
+  window._currentResult = null;
+  window._lastCorrect = false;
+  switchScreen('scr-learn');
+  renderScenario();
+}
+
+function restart() {
+  startTool();
+  switchScreen('scr-learn');
+}
+
+// ═══════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════
+renderHeader();
+renderWelcome();
+</script>
+</body>
+</html>
