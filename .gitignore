@@ -1,0 +1,22 @@
+# Azurite
+__blobstorage__/
+__queuestorage__/
+__azurite_db_*.json
+AzuriteConfig
+
+# Local settings
+.env
+api/local.settings.json
+
+# Build output
+api/bin/
+api/obj/
+api - copia/
+
+# VS Code
+.vscode/
+
+# Misc
+*.sln
+README.md
+ciberseguridad-app.zip
