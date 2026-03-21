@@ -3,6 +3,10 @@
     {
       "route": "/api/*",
       "allowedRoles": ["anonymous"]
+    },
+    {
+      "route": "/*",
+      "allowedRoles": ["anonymous"]
     }
   ],
   "globalHeaders": {
@@ -11,6 +15,7 @@
     "Access-Control-Allow-Headers": "Content-Type"
   },
   "navigationFallback": {
-    "rewrite": "/index.html"
+    "rewrite": "/index.html",
+    "exclude": ["/api/*"]
   }
 }
