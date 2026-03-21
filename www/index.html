@@ -178,6 +178,31 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
   .dtrack-item{display:flex;align-items:center;gap:10px}
   .dtrack-icon{margin-bottom:0}
 }
+
+/* ── POST CUESTIONARIO ── */
+.post-domain-div{display:flex;align-items:center;gap:12px;margin:24px 0 16px}
+.post-domain-div-line{flex:1;height:1px;background:var(--border)}
+.post-domain-div-label{font-size:11px;font-weight:600;color:var(--accent2);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:4px 12px}
+.post-q-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:14px;overflow:hidden}
+.post-q-head{padding:14px 18px 12px;border-bottom:1px solid var(--border);display:flex;gap:10px;align-items:flex-start}
+.post-q-num{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:500;color:var(--accent2);background:rgba(79,124,255,.1);border-radius:5px;padding:2px 7px;flex-shrink:0;margin-top:2px}
+.post-q-title{font-size:13px;font-weight:500;line-height:1.5}
+.post-q-ctx{padding:10px 18px;font-size:12.5px;color:var(--text2);line-height:1.6;border-bottom:1px solid var(--border);font-style:italic}
+.post-opts-wrap{padding:12px 18px 14px;display:flex;flex-direction:column;gap:6px}
+.post-opt{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid var(--border);border-radius:var(--rs);cursor:pointer;transition:all .18s;background:var(--surface2);font-size:13px;color:var(--text2)}
+.post-opt:hover{border-color:var(--border2);background:#242a3a}
+.post-opt.selected{border-color:var(--accent);background:rgba(79,124,255,.08);color:var(--text)}
+.post-opt.locked{pointer-events:none}
+.post-opt-letter{width:20px;height:20px;border-radius:4px;border:1.5px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:var(--text3);flex-shrink:0;margin-top:1px;font-family:'JetBrains Mono',monospace}
+.post-opt.selected .post-opt-letter{background:var(--accent);border-color:var(--accent);color:#fff}
+.post-score-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);padding:12px 14px;text-align:center}
+.post-score-card .cc-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}
+.post-score-card .cc-val{font-size:24px;font-weight:600}
+.post-qr{background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);padding:12px 15px;margin-bottom:10px}
+.post-qr-head{display:flex;gap:10px;align-items:flex-start;margin-bottom:6px}
+.post-qr-body{font-size:12px;color:var(--text2);line-height:1.55;padding-left:24px}
+.post-qr-chosen{font-size:11.5px;color:var(--text3);margin-top:4px;padding-left:24px}
+.post-qr-chosen span{color:var(--text2)}
 </style>
 </head>
 <body>
@@ -224,12 +249,48 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
       <div class="ci">🎯</div>
       <h2 id="r-title"></h2>
       <p id="r-sub"></p>
-      <button class="btn btn-primary" onclick="restart()" id="r-restart"></button>
+      <button class="btn btn-primary" onclick="goToPost()" id="r-continue-post"></button>
+      <button class="btn" onclick="restart()" id="r-restart"></button>
     </div>
     <div id="r-domains"></div>
     <div id="r-recs"></div>
     <div id="save-wrap"></div>
     <div id="hist-wrap"></div>
+  </div>
+
+  <!-- POST-CUESTIONARIO -->
+  <div class="screen" id="scr-post">
+    <div style="margin-bottom:20px">
+      <div class="hdr-tag" style="margin-bottom:12px">📋 <span id="post-hd-tag"></span></div>
+      <p style="font-size:13px;color:var(--text2);line-height:1.65;max-width:480px" id="post-hd-sub"></p>
+    </div>
+    <div class="progress-wrap" style="margin-bottom:20px">
+      <div style="height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-bottom:8px">
+        <div id="post-prog-fill" style="height:100%;background:var(--accent);border-radius:2px;transition:width .4s ease;width:0%"></div>
+      </div>
+      <div style="font-size:12px;color:var(--text3);font-family:'JetBrains Mono',monospace" id="post-prog-label"></div>
+    </div>
+    <div id="post-questions-wrap"></div>
+    <div style="display:flex;justify-content:flex-end;margin-top:24px;gap:10px;align-items:center">
+      <span style="font-size:13px;color:var(--text3)" id="post-submit-hint"></span>
+      <button class="btn btn-primary" id="post-submit-btn" onclick="postSubmitQuiz()" disabled></button>
+    </div>
+  </div>
+
+  <!-- POST RESULTADOS -->
+  <div class="screen" id="scr-post-results">
+    <div style="text-align:center;padding:32px 0 20px">
+      <div style="font-size:44px;margin-bottom:12px" id="post-r-icon"></div>
+      <h2 style="font-size:20px;font-weight:600;letter-spacing:-.02em;margin-bottom:6px" id="post-r-title"></h2>
+      <p style="font-size:13px;color:var(--text2);max-width:380px;margin:0 auto" id="post-r-sub"></p>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:20px 0" id="post-score-cards"></div>
+    <div id="post-q-results"></div>
+    <div style="display:flex;gap:10px;margin-top:20px;flex-wrap:wrap">
+      <button class="btn" onclick="restartEverything()" id="post-r-restart"></button>
+    </div>
+    <div id="post-save-wrap"></div>
+    <div id="post-hist-wrap"></div>
   </div>
 
 </div>
@@ -274,6 +335,7 @@ es:{
   histTitle:'Historial en este dispositivo',
   attemptLabel:'Situación',
   noAttempts:'',
+  continueToPost:'Continuar a la evaluación →',
 },
 en:{
   tag:'Adaptive Learning',
@@ -310,6 +372,7 @@ en:{
   histTitle:'History on this device',
   attemptLabel:'Situation',
   noAttempts:'',
+  continueToPost:'Continue to assessment →',
 },
 };
 
@@ -1154,6 +1217,325 @@ en:[
 ],
 };
 
+const TX_POST = {
+es:{
+  tag:'Evaluación Post',
+  title:'Ciberseguridad <span>Personal</span>',
+  sub:'10 preguntas sobre los dos dominios clave — equivalentes al cuestionario inicial pero con contextos distintos. Responde según lo que harías en cada situación.',
+  progLabel:'Respondidas: {answered} de {total}',
+  submitHint:'Responde todas las preguntas para continuar.',
+  submitBtn:'Ver mis resultados',
+  rTitle:'Evaluación completada',
+  rSub:'Aquí está tu resultado en los dos dominios evaluados.',
+  rRestart:'Repetir evaluación',
+  cardLabels:['Contraseñas y Auth.','Respaldos y Archivos','Total'],
+  correct:'Correcto',incorrect:'Puede mejorar',
+  yourAnswer:'Tu respuesta:',bestAnswer:'Respuesta óptima:',
+  domainDividers:['🔑 Contraseñas y Autenticación','💾 Respaldos y Archivos'],
+  saveLabel:'Guardar resultados',saveDesc:'Solo en este dispositivo.',
+  savedOk:'✓ Guardado',downloadLabel:'Descargar JSON',clearLabel:'Borrar historial',
+  histTitle:'Historial guardado',
+},
+en:{
+  tag:'Post Assessment',
+  title:'Personal <span>Cybersecurity</span>',
+  sub:'10 questions on the two key domains — equivalent to the initial questionnaire but with different contexts. Answer based on what you would actually do in each situation.',
+  progLabel:'Answered: {answered} of {total}',
+  submitHint:'Answer all questions to continue.',
+  submitBtn:'See my results',
+  rTitle:'Assessment completed',
+  rSub:'Here is your result across the two domains evaluated.',
+  rRestart:'Repeat assessment',
+  cardLabels:['Passwords & Auth.','Backups & Files','Total'],
+  correct:'Correct',incorrect:'Can improve',
+  yourAnswer:'Your answer:',bestAnswer:'Best answer:',
+  domainDividers:['🔑 Passwords & Authentication','💾 Backups & File Management'],
+  saveLabel:'Save results',saveDesc:'Stored only on this device.',
+  savedOk:'✓ Saved',downloadLabel:'Download JSON',clearLabel:'Clear history',
+  histTitle:'Saved history',
+},
+};
+
+// ════════════════════════════════════════════════
+// QUESTIONS
+// 5 per domain, different context than original
+// correct option is always s:4
+// ════════════════════════════════════════════════
+
+const QUESTIONS = {
+es:[
+  // DOMAIN 0 — Contraseñas (Q1–Q5)
+  {
+    domain:0,
+    title:'Recibes un aviso de que un servicio de streaming que usas fue comprometido y tu correo está en la lista filtrada.',
+    ctx:'Usas la misma contraseña en ese streaming, en tu correo principal y en una aplicación de banco móvil.',
+    opts:[
+      {t:'Cambio la contraseña del streaming y espero a ver si pasa algo más.',s:1},
+      {t:'Cambio la contraseña en el streaming y en el correo, pero el banco no me preocupa.',s:2},
+      {t:'Cambio la contraseña en los tres servicios inmediatamente y activo el segundo factor donde no lo tenga.',s:4},
+      {t:'Cambio solo en el servicio filtrado — los otros no fueron afectados directamente.',s:2},
+    ],
+    correct:2,
+    explanation:'Una contraseña filtrada en un servicio está comprometida en todos los servicios donde se reutiliza. El atacante probará esa misma clave en correo y banco. Cambiar en todos y activar el segundo factor cierra el riesgo completo.',
+  },
+  {
+    domain:0,
+    title:'Un familiar te pide consejo porque siempre olvida sus contraseñas y termina usando la misma en todo.',
+    ctx:'Tiene cuentas en correo, banco, tiendas en línea y redes sociales. Quiere una solución práctica.',
+    opts:[
+      {t:'Que use una contraseña compleja pero igual para todo — si es difícil de adivinar está bien.',s:1},
+      {t:'Que cree una frase larga y diferente para cada servicio que pueda memorizar.',s:3},
+      {t:'Que use un gestor de contraseñas — genera y recuerda contraseñas únicas por servicio.',s:4},
+      {t:'Que use variaciones de la misma contraseña (por ejemplo añadiendo el nombre del sitio).',s:2},
+    ],
+    correct:2,
+    explanation:'Un gestor de contraseñas es la solución más completa: genera contraseñas únicas, aleatorias y largas por servicio, y las recuerda por él. Solo necesita recordar una contraseña maestra. Es más seguro y más cómodo que cualquier alternativa.',
+  },
+  {
+    domain:0,
+    title:'Quieres activar la verificación en dos pasos en tus cuentas principales. Tu banco y tu correo ofrecen SMS o app generadora de códigos.',
+    ctx:'Tienes 10 minutos para configurarlo ahora.',
+    opts:[
+      {t:'Activo SMS en el banco porque ya lo conozco, y dejo el correo para después.',s:2},
+      {t:'Activo app generadora de códigos en correo y banco, y guardo los códigos de recuperación.',s:4},
+      {t:'No lo activo ahora — lo haré cuando tenga más tiempo para entenderlo bien.',s:1},
+      {t:'Activo SMS en ambos porque es la opción más sencilla.',s:3},
+    ],
+    correct:1,
+    explanation:'La app generadora de códigos es más segura que SMS porque no depende del operador telefónico y es resistente al SIM swapping. Guardar los códigos de recuperación es indispensable — si pierdes el teléfono, son la única forma de recuperar el acceso.',
+  },
+  {
+    domain:0,
+    title:'Te llega un correo que dice: "Alguien intentó acceder a tu cuenta desde un país desconocido. Confirma tu identidad aquí." Incluye un botón grande con tu nombre.',
+    ctx:'El correo se ve exactamente igual que los correos reales de ese servicio. Sientes urgencia de actuar.',
+    opts:[
+      {t:'Hago clic en el botón — parece real y mi cuenta puede estar en riesgo.',s:1},
+      {t:'Entro al servicio directamente escribiendo la URL en el navegador para verificar.',s:4},
+      {t:'Respondo al correo preguntando si el intento de acceso fue real.',s:2},
+      {t:'Lo ignoro — si fuera real el servicio me habría llamado.',s:2},
+    ],
+    correct:1,
+    explanation:'Entrar directamente al servicio desde tu navegador garantiza que estás en el sitio real. Si hubo un intento de acceso inusual, lo verás en el historial de actividad de tu cuenta. Hacer clic en el enlace del correo puede llevarte a un sitio falso.',
+  },
+  {
+    domain:0,
+    title:'Al revisar tu cuenta bancaria desde una computadora pública, notas que el navegador ofreció guardar tu contraseña.',
+    ctx:'Estás en una biblioteca. Terminaste de usar el banco.',
+    opts:[
+      {t:'Acepto guardar la contraseña — es conveniente para la próxima vez.',s:1},
+      {t:'No guardo la contraseña y cierro solo la ventana del banco.',s:2},
+      {t:'No guardo la contraseña, cierro la sesión del banco y borro el historial y datos del navegador.',s:4},
+      {t:'No guardo la contraseña y apago la computadora.',s:3},
+    ],
+    correct:2,
+    explanation:'En una computadora pública, el paso crítico es cerrar sesión activamente y borrar los datos del navegador (historial, contraseñas guardadas, cookies). Solo cerrar la ventana deja la sesión potencialmente activa en el navegador.',
+  },
+  // DOMAIN 1 — Respaldos (Q6–Q10)
+  {
+    domain:1,
+    title:'Trabajas en un proyecto importante desde tu laptop. Tienes sincronización activa a la nube. ¿Cuál es el escenario que tu configuración actual NO cubre?',
+    ctx:'La nube sincroniza automáticamente cada vez que guardas un archivo.',
+    opts:[
+      {t:'Que se rompa el disco duro de la laptop.',s:1},
+      {t:'Que roben la laptop.',s:1},
+      {t:'Un ataque de ransomware que cifra los archivos mientras la sincronización está activa.',s:4},
+      {t:'Que se inunde la oficina.',s:1},
+    ],
+    correct:2,
+    explanation:'La sincronización activa es bidireccional. Si el ransomware cifra tus archivos locales, esos archivos cifrados se sincronizan a la nube reemplazando las versiones originales. Un disco externo desconectado es la única capa que el ransomware no puede alcanzar.',
+  },
+  {
+    domain:1,
+    title:'Llevas seis meses con respaldo en la nube activo. ¿Cómo confirmas que realmente funciona?',
+    ctx:'El indicador de la app muestra "sincronizado" desde hace meses.',
+    opts:[
+      {t:'Si el indicador dice "sincronizado", el respaldo funciona.',s:1},
+      {t:'Reviso que mis archivos aparecen listados en el portal de la nube.',s:2},
+      {t:'Descargo un archivo del respaldo a otro dispositivo y confirmo que puedo abrirlo.',s:4},
+      {t:'Espero — si hubiera algún error, el sistema me habría avisado.',s:1},
+    ],
+    correct:2,
+    explanation:'El indicador "sincronizado" confirma que el proceso corrió, no que los archivos son recuperables. La única verificación real es descargar un archivo del respaldo y abrirlo exitosamente. Un archivo puede estar listado pero corrupto o incompleto.',
+  },
+  {
+    domain:1,
+    title:'El lunes por la mañana encuentras que todos tus documentos muestran una extensión desconocida y no puedes abrirlos. Aparece un mensaje pidiendo pago.',
+    ctx:'Tu laptop sigue conectada al WiFi de tu casa. Hay otros dispositivos en la misma red.',
+    opts:[
+      {t:'Pago el rescate — necesito esos archivos y es lo más rápido.',s:1},
+      {t:'Desconecto la laptop de la red WiFi inmediatamente y luego evalúo qué hacer.',s:4},
+      {t:'Apago la laptop y la llevo con un técnico sin desconectarla de la red antes.',s:2},
+      {t:'Busco en internet una herramienta para descifrar los archivos desde el mismo equipo.',s:1},
+    ],
+    correct:1,
+    explanation:'Desconectar de la red es el primer paso porque contiene el daño: evita que el ransomware se propague a otros dispositivos y detiene su comunicación con el servidor del atacante. Pagar no garantiza recuperación y buscar soluciones en el mismo equipo infectado puede empeorar la situación.',
+  },
+  {
+    domain:1,
+    title:'Un colega te envía un documento de trabajo urgente a través de un enlace público que "cualquiera con el link puede ver". El documento incluye datos de clientes.',
+    ctx:'Tu colega dice que es más rápido así. Tienes que decidir si reenvías el mismo tipo de enlace a otro colega.',
+    opts:[
+      {t:'Reenvío el mismo enlace público — ya está compartido de esa forma.',s:1},
+      {t:'Descargo el documento y lo adjunto en un correo al otro colega.',s:3},
+      {t:'Accedo al documento y lo vuelvo a compartir con permisos específicos para el otro colega.',s:4},
+      {t:'Copio el contenido a un documento nuevo y lo comparto con acceso restringido.',s:3},
+    ],
+    correct:2,
+    explanation:'Compartir con permisos específicos por cuenta garantiza que solo las personas autorizadas tienen acceso, con posibilidad de revocar cuando sea necesario. Un enlace público con datos de clientes puede llegar a personas no autorizadas sin que te des cuenta.',
+  },
+  {
+    domain:1,
+    title:'Terminas un proyecto importante y quieres asegurarte de que los archivos están respaldados correctamente antes de archivarlos.',
+    ctx:'Tienes la nube activa y un disco externo que no has usado en dos meses.',
+    opts:[
+      {t:'La nube los tiene — no necesito hacer nada más.',s:2},
+      {t:'Conecto el disco externo, copio los archivos finales, desconecto el disco y verifico que se puedan abrir.',s:4},
+      {t:'Subo los archivos a un segundo servicio de nube por seguridad adicional.',s:3},
+      {t:'Los comprimo y los mando por correo a mí mismo como respaldo.',s:2},
+    ],
+    correct:1,
+    explanation:'Copiar al disco externo y verificar que los archivos se puedan abrir desde él es la estrategia más completa: tendrás la nube más una copia offline. La verificación es indispensable — un archivo copiado que no se puede abrir no es un respaldo real.',
+  },
+],
+en:[
+  // DOMAIN 0 — Passwords (Q1–Q5)
+  {
+    domain:0,
+    title:'You receive a notice that a streaming service you use was compromised and your email is in the leaked list.',
+    ctx:'You use the same password for that streaming service, your main email, and a mobile banking app.',
+    opts:[
+      {t:'I change the password for the streaming service and wait to see if anything else happens.',s:1},
+      {t:'I change the password on streaming and email, but the bank doesn\'t worry me.',s:2},
+      {t:'I change the password on all three services immediately and enable second factor where I don\'t have it.',s:4},
+      {t:'I change only the breached service — the others weren\'t directly affected.',s:2},
+    ],
+    correct:2,
+    explanation:'A password leaked from one service is compromised on every service where it was reused. The attacker will try that same key on email and bank. Changing everywhere and enabling second factor closes the full risk.',
+  },
+  {
+    domain:0,
+    title:'A family member asks your advice because they always forget passwords and end up using the same one everywhere.',
+    ctx:'They have accounts for email, banking, online stores, and social media. They want a practical solution.',
+    opts:[
+      {t:'Use one complex password for everything — if it\'s hard to guess, it\'s fine.',s:1},
+      {t:'Create a long phrase for each service that they can memorize.',s:3},
+      {t:'Use a password manager — it generates and remembers unique passwords per service.',s:4},
+      {t:'Use variations of the same password (e.g., adding the site name).',s:2},
+    ],
+    correct:2,
+    explanation:'A password manager is the most complete solution: it generates unique, random, long passwords per service and remembers them. They only need to remember one master password. More secure and more convenient than any alternative.',
+  },
+  {
+    domain:0,
+    title:'You want to enable two-step verification on your main accounts. Your bank and email both offer SMS or an authenticator app.',
+    ctx:'You have 10 minutes to set it up now.',
+    opts:[
+      {t:'I enable SMS on the bank because I know it, and leave email for later.',s:2},
+      {t:'I enable an authenticator app on both email and bank, and save the recovery codes.',s:4},
+      {t:'I don\'t enable it now — I\'ll do it when I have more time to understand it properly.',s:1},
+      {t:'I enable SMS on both because it\'s the simplest option.',s:3},
+    ],
+    correct:1,
+    explanation:'An authenticator app is more secure than SMS because it doesn\'t depend on your phone carrier and is resistant to SIM swapping. Saving recovery codes is essential — if you lose your phone, they\'re the only way to recover access.',
+  },
+  {
+    domain:0,
+    title:'You receive an email: "Someone tried to access your account from an unknown country. Confirm your identity here." It includes a large button with your name.',
+    ctx:'The email looks exactly like real emails from that service. You feel urgency to act.',
+    opts:[
+      {t:'I click the button — it looks real and my account could be at risk.',s:1},
+      {t:'I go to the service directly by typing the URL in my browser to verify.',s:4},
+      {t:'I reply to the email asking if the access attempt was real.',s:2},
+      {t:'I ignore it — if it were real they would have called me.',s:2},
+    ],
+    correct:1,
+    explanation:'Going directly to the service from your browser guarantees you\'re on the real site. If there was an unusual access attempt, you\'ll see it in your account\'s activity history. Clicking the link in the email may take you to a fake site.',
+  },
+  {
+    domain:0,
+    title:'While checking your bank account from a public computer, you notice the browser offered to save your password.',
+    ctx:'You\'re at a library. You\'ve finished using the bank.',
+    opts:[
+      {t:'I accept saving the password — it\'s convenient for next time.',s:1},
+      {t:'I don\'t save the password and just close the bank window.',s:2},
+      {t:'I don\'t save the password, log out of the bank, and clear the browser history and data.',s:4},
+      {t:'I don\'t save the password and turn off the computer.',s:3},
+    ],
+    correct:2,
+    explanation:'On a public computer, the critical step is to actively log out and clear browser data (history, saved passwords, cookies). Just closing the window may leave the session potentially active in the browser.',
+  },
+  // DOMAIN 1 — Backups (Q6–Q10)
+  {
+    domain:1,
+    title:'You\'re working on an important project from your laptop. You have active cloud sync. Which scenario does your current setup NOT cover?',
+    ctx:'The cloud syncs automatically every time you save a file.',
+    opts:[
+      {t:'The laptop\'s hard drive breaking.',s:1},
+      {t:'The laptop being stolen.',s:1},
+      {t:'A ransomware attack that encrypts files while sync is active.',s:4},
+      {t:'The office flooding.',s:1},
+    ],
+    correct:2,
+    explanation:'Active sync is bidirectional. If ransomware encrypts your local files, those encrypted files sync to the cloud replacing the originals. A disconnected external drive is the only layer ransomware can\'t reach.',
+  },
+  {
+    domain:1,
+    title:'You\'ve had active cloud backup for six months. How do you confirm it actually works?',
+    ctx:'The app indicator has shown "synced" for months.',
+    opts:[
+      {t:'If the indicator says "synced," the backup works.',s:1},
+      {t:'I check that my files appear listed in the cloud portal.',s:2},
+      {t:'I download a file from the backup to another device and confirm I can open it.',s:4},
+      {t:'I wait — if there were an error, the system would have notified me.',s:1},
+    ],
+    correct:2,
+    explanation:'The "synced" indicator confirms the process ran, not that files are recoverable. The only real verification is downloading a file from the backup and opening it successfully. A file can be listed but corrupted or incomplete.',
+  },
+  {
+    domain:1,
+    title:'Monday morning you find all your documents show an unknown extension and can\'t be opened. A message appears demanding payment.',
+    ctx:'Your laptop is still connected to your home WiFi. Other devices are on the same network.',
+    opts:[
+      {t:'I pay the ransom — I need those files and it\'s the fastest solution.',s:1},
+      {t:'I immediately disconnect the laptop from WiFi and then assess what to do.',s:4},
+      {t:'I turn off the laptop and take it to a technician without disconnecting from the network first.',s:2},
+      {t:'I search online for a tool to decrypt the files from the same device.',s:1},
+    ],
+    correct:1,
+    explanation:'Disconnecting from the network is the first step because it contains the damage: it prevents ransomware from spreading to other devices and stops its communication with the attacker\'s server. Paying doesn\'t guarantee recovery and searching for solutions on the infected device can make things worse.',
+  },
+  {
+    domain:1,
+    title:'A colleague sends you a work document urgently via a public link that "anyone with the link can view." The document includes client data.',
+    ctx:'Your colleague says it\'s faster this way. You need to forward it to another colleague.',
+    opts:[
+      {t:'I forward the same public link — it\'s already shared that way.',s:1},
+      {t:'I download the document and attach it in an email to the other colleague.',s:3},
+      {t:'I access the document and reshare it with specific permissions for the other colleague.',s:4},
+      {t:'I copy the content to a new document and share it with restricted access.',s:3},
+    ],
+    correct:2,
+    explanation:'Sharing with specific account permissions ensures only authorized people have access, with the ability to revoke when needed. A public link with client data can reach unauthorized people without you realizing.',
+  },
+  {
+    domain:1,
+    title:'You\'ve finished an important project and want to make sure the files are properly backed up before archiving them.',
+    ctx:'You have active cloud sync and an external drive you haven\'t used in two months.',
+    opts:[
+      {t:'The cloud has them — I don\'t need to do anything else.',s:2},
+      {t:'I connect the external drive, copy the final files, disconnect the drive, and verify I can open them.',s:4},
+      {t:'I upload the files to a second cloud service for extra safety.',s:3},
+      {t:'I compress and email them to myself as a backup.',s:2},
+    ],
+    correct:1,
+    explanation:'Copying to the external drive and verifying the files can be opened from it is the most complete strategy: you\'ll have cloud plus an offline copy. The verification is essential — a copied file that can\'t be opened is not a real backup.',
+  },
+],
+};
+
+// Scoring: 4=correct 3=good 2=regular 1=bad (but we only care about correct answer index)
+const SCORING = {4:4, 3:3, 2:2, 1:1};
+
 // ═══════════════════════════════════════════════════════
 // STATE
 // ═══════════════════════════════════════════════════════
@@ -1164,20 +1546,6 @@ let attemptIdx = 0;    // 0-2 (max 3 attempts per subtopic)
 let subtopicResults2 = [[null,null,null,null],[null,null,null,null]];
 
 const STORAGE_KEY = 'cyberad_results';
-const API_ENDPOINT = 'https://ciberseguridad-func.azurewebsites.net/api/saveresult';
-
-async function sendToServer(payload) {
-  try {
-    const res = await fetch(API_ENDPOINT, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
-    return res.ok;
-  } catch (e) {
-    return false;
-  }
-}
 
 // ═══════════════════════════════════════════════════════
 // HELPERS
@@ -1204,6 +1572,7 @@ function setLang(l) {
   renderHeader();
   const active = document.querySelector('.screen.active').id;
   if (active === 'scr-welcome') renderWelcome();
+  else if (active === 'scr-post' || active === 'scr-post-results') postRenderAll();
 }
 
 // ═══════════════════════════════════════════════════════
@@ -1431,10 +1800,15 @@ function continueFlow() {
 function showResults() {
   switchScreen('scr-results');
   const tx = TX[lang];
+  document.getElementById('r-title').textContent = tx.rTitle;
+  document.getElementById('r-sub').textContent = tx.rSub;
+  document.getElementById('r-restart').textContent = tx.rRestart;
+  document.getElementById('r-continue-post').textContent = tx.continueToPost;
 
-  // Envío automático al servidor — silencioso, no bloquea la UI
+  // Envío automático al servidor — silencioso
   const autoPayload = {
     tool: 'adaptativa',
+    sessionId: SESSION_ID,
     lang: lang.toUpperCase(),
     timestamp: new Date().toISOString(),
     domains: TX[lang].domains.map((dname, di) => ({
@@ -1446,9 +1820,6 @@ function showResults() {
     })),
   };
   sendToServer(autoPayload);
-  document.getElementById('r-title').textContent = tx.rTitle;
-  document.getElementById('r-sub').textContent = tx.rSub;
-  document.getElementById('r-restart').textContent = tx.rRestart;
 
   const rDomains = document.getElementById('r-domains');
   rDomains.innerHTML = `<div class="result-section"><h3>${tx.rDomainLabel}</h3></div>`;
@@ -1588,7 +1959,7 @@ function renderSaveBanner(saved = false) {
   if (existing) existing.remove();
   const hasSaved = getSaved().length > 0;
   const banner = document.createElement('div');
-  banner.id = 'save-banner';
+  banner.id = 'post-save-banner';
   banner.className = 'save-banner';
   banner.innerHTML = `<p><strong>${saved ? tx.savedOk : tx.saveLabel}</strong> — ${tx.saveDesc}</p>
     <div class="save-actions">
@@ -1644,9 +2015,311 @@ function restart() {
   switchScreen('scr-learn');
 }
 
+
+function postRenderAll() {
+  const tx = TX_POST[lang];
+  document.getElementById('post-hd-tag').textContent = tx.tag;
+  document.getElementById('post-hd-sub').textContent = tx.sub;
+  document.getElementById('post-submit-btn').textContent = tx.submitBtn;
+  postRenderQuestions();
+  postUpdateProgress();
+}
+
+function postRenderQuestions() {
+  const tx = TX_POST[lang];
+  const qs = QUESTIONS[lang];
+  const wrap = document.getElementById('post-questions-wrap');
+  wrap.innerHTML = '';
+  const letters = ['A','B','C','D'];
+  let lastDomain = -1;
+
+  qs.forEach((q, qi) => {
+    if (q.domain !== lastDomain) {
+      lastDomain = q.domain;
+      const div = document.createElement('div');
+      div.className = 'post-domain-div';
+      div.innerHTML = `<div class="post-domain-div-line"></div><div class="post-domain-div-label">${tx.domainDividers[q.domain]}</div><div class="post-domain-div-line"></div>`;
+      wrap.appendChild(div);
+    }
+
+    const card = document.createElement('div');
+    card.className = 'post-q-card';
+    const optsWrap = document.createElement('div');
+    optsWrap.className = 'post-opts-wrap';
+    optsWrap.id = 'post-qopts-' + qi;
+    const head = document.createElement('div');
+    head.className = 'post-q-head';
+    head.innerHTML = `<div class="post-q-num">P${qi+1}</div><div class="post-q-title">${q.title}</div>`;
+    const ctx = document.createElement('div');
+    ctx.className = 'post-q-ctx';
+    ctx.textContent = q.ctx;
+    card.appendChild(head);
+    card.appendChild(ctx);
+    card.appendChild(optsWrap);
+    wrap.appendChild(card);
+
+    q.opts.forEach((opt, oi) => {
+      const div = document.createElement('div');
+      div.className = 'post-opt' + (postUserAnswers[qi] === oi ? ' selected' : '');
+      div.innerHTML = `<div class="post-opt-letter">${letters[oi]}</div><div class="opt-text" style="font-size:13px;line-height:1.45;color:var(--text2);flex:1">${opt.t}</div>`;
+      div.onclick = () => postSelectAnswer(qi, oi);
+      optsWrap.appendChild(div);
+    });
+  });
+}
+
+function postSelectAnswer(qi, oi) {
+  postUserAnswers[qi] = oi;
+  const wrap = document.getElementById('post-qopts-' + qi);
+  wrap.querySelectorAll('.post-opt').forEach((o, i) => o.classList.toggle('selected', i === oi));
+  postUpdateProgress();
+}
+
+function postUpdateProgress() {
+  const tx = TX_POST[lang];
+  const answered = postUserAnswers.filter(a => a !== null).length;
+  const total = 10;
+  document.getElementById('post-prog-fill').style.width = Math.round(answered / total * 100) + '%';
+  document.getElementById('post-prog-label').textContent = tx.progLabel.replace('{answered}', answered).replace('{total}', total);
+  const allDone = answered === total;
+  document.getElementById('post-submit-btn').disabled = !allDone;
+  document.getElementById('post-submit-hint').textContent = allDone ? '' : tx.submitHint;
+}
+
+// ════════════════════════════════════════════════
+// SUBMIT
+// ════════════════════════════════════════════════
+function postSubmitQuiz() {
+  const tx = TX_POST[lang];
+  const qs = QUESTIONS[lang];
+
+  let correctByDomain = [0, 0];
+  let totalByDomain = [0, 0];
+
+  qs.forEach((q, qi) => {
+    totalByDomain[q.domain]++;
+    if (postUserAnswers[qi] === q.correct) correctByDomain[q.domain]++;
+  });
+
+  const totalCorrect = correctByDomain[0] + correctByDomain[1];
+  const pct = Math.round(totalCorrect / 10 * 100);
+
+  // Envío automático al servidor — silencioso, no bloquea la UI
+  const autoPayload = {
+    tool: 'post-cuestionario',
+    sessionId: SESSION_ID,
+    lang: lang.toUpperCase(),
+    timestamp: new Date().toISOString(),
+    domain0: correctByDomain[0] + '/5',
+    domain1: correctByDomain[1] + '/5',
+    total: totalCorrect + '/10',
+    pct: pct + '%',
+    answers: QUESTIONS[lang].map((q, qi) => ({
+      question: q.title,
+      domain: q.domain,
+      chosen: q.opts[postUserAnswers[qi]] ? q.opts[postUserAnswers[qi]].t : 'N/A',
+      correct: postUserAnswers[qi] === q.correct,
+    })),
+  };
+  sendToServer(autoPayload);
+
+  switchScreen('scr-post-results');
+  window.scrollTo(0, 0);
+  document.documentElement.scrollTop = 0;
+
+  document.getElementById('post-r-icon').textContent = pct >= 80 ? '🏆' : pct >= 60 ? '👍' : '📚';
+  document.getElementById('post-r-title').textContent = tx.rTitle;
+  document.getElementById('post-r-sub').textContent = tx.rSub;
+  document.getElementById('post-r-restart').textContent = tx.rRestart;
+
+  // Score cards
+  const sc = document.getElementById('post-score-cards');
+  sc.innerHTML = '';
+  [
+    { label: tx.cardLabels[0], val: correctByDomain[0] + '/5', pct: correctByDomain[0]/5 },
+    { label: tx.cardLabels[1], val: correctByDomain[1] + '/5', pct: correctByDomain[1]/5 },
+    { label: tx.cardLabels[2], val: totalCorrect + '/10', pct: totalCorrect/10 },
+  ].forEach(c => {
+    const cls = c.pct >= .8 ? 'good' : c.pct >= .6 ? 'ok' : 'bad';
+    sc.innerHTML += `<div class="post-score-card"><div class="sc-label">${c.label}</div><div class="sc-val ${cls}">${c.val}</div></div>`;
+  });
+
+  // Question results
+  const qr = document.getElementById('post-q-results');
+  qr.innerHTML = '';
+  let lastDomain = -1;
+
+  qs.forEach((q, qi) => {
+    if (q.domain !== lastDomain) {
+      lastDomain = q.domain;
+      const div = document.createElement('div');
+      div.className = 'post-domain-div';
+      div.style.margin = '20px 0 12px';
+      div.innerHTML = `<div class="post-domain-div-line"></div><div class="post-domain-div-label">${tx.domainDividers[q.domain]}</div><div class="post-domain-div-line"></div>`;
+      qr.appendChild(div);
+    }
+
+    const correct = postUserAnswers[qi] === q.correct;
+    const card = document.createElement('div');
+    card.className = 'q-result';
+    card.innerHTML = `<div class="post-qr-head">
+        <div class="qr-icon">${correct ? '✅' : '⚠️'}</div>
+        <div class="qr-title">P${qi+1}. ${q.title}</div>
+      </div>
+      <div class="post-qr-body">${q.explanation}</div>
+      ${!correct ? `<div class="post-qr-chosen">${tx.yourAnswer} <span>${q.opts[postUserAnswers[qi]].t}</span></div>
+      <div class="post-qr-chosen">${tx.bestAnswer} <span>${q.opts[q.correct].t}</span></div>` : ''}`;
+    qr.appendChild(card);
+  });
+
+  postRenderSaveBanner(false, { correctByDomain, totalCorrect, pct });
+  postRenderHistory();
+}
+
+// ════════════════════════════════════════════════
+// SAVE
+// ════════════════════════════════════════════════
+
+function postGetSaved() {
+  try { return JSON.parse(localStorage.getItem(POST_STORAGE_KEY) || '[]'); } catch { return []; }
+}
+
+function postSaveResults() {
+  if (!_postLastResult) return;
+  const tx = TX_POST[lang];
+  const entry = {
+    date: new Date().toLocaleString(),
+    lang: lang.toUpperCase(),
+    domain0: _postLastResult.correctByDomain[0] + '/5',
+    domain1: _postLastResult.correctByDomain[1] + '/5',
+    total: _postLastResult.totalCorrect + '/10',
+    pct: _postLastResult.pct + '%',
+  };
+  const saved = postGetSaved();
+  saved.unshift(entry);
+  if (saved.length > 30) saved.pop();
+  localStorage.setItem(POST_STORAGE_KEY, JSON.stringify(saved));
+  postRenderSaveBanner(true, _postLastResult);
+  postRenderHistory();
+}
+
+function postDownloadJSON() {
+  const saved = postGetSaved();
+  if (!saved.length) return;
+  const blob = new Blob([JSON.stringify(saved, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'ciberseguridad_post_' + new Date().toISOString().slice(0, 10) + '.json';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function postClearHistory() {
+  localStorage.removeItem(POST_STORAGE_KEY);
+  postRenderSaveBanner(false, _postLastResult);
+  postRenderHistory();
+}
+
+function postRenderSaveBanner(saved, result) {
+  if (result) _postLastResult = result;
+  const tx = TX_POST[lang];
+  const existing = document.getElementById('post-save-banner');
+  if (existing) existing.remove();
+  const hasSaved = postGetSaved().length > 0;
+  const banner = document.createElement('div');
+  banner.id = 'post-save-banner';
+  banner.className = 'save-banner';
+  banner.innerHTML = `<p><strong>${saved ? tx.savedOk : tx.saveLabel}</strong> — ${tx.saveDesc}</p>
+    <div class="save-actions">
+      ${!saved ? `<button class="btn btn-sm btn-primary" onclick="postSaveResults()">${tx.saveLabel}</button>` : ''}
+      ${hasSaved ? `<button class="btn btn-sm" onclick="postDownloadJSON()">${tx.downloadLabel}</button>` : ''}
+      ${hasSaved ? `<button class="btn btn-sm btn-ghost" onclick="postClearHistory()">${tx.clearLabel}</button>` : ''}
+    </div>`;
+  document.getElementById('post-save-wrap').appendChild(banner);
+}
+
+function postRenderHistory() {
+  const tx = TX_POST[lang];
+  const wrap = document.getElementById('post-hist-wrap');
+  wrap.innerHTML = '';
+  const saved = postGetSaved();
+  if (!saved.length) return;
+  const panel = document.createElement('div');
+  panel.className = 'results-panel';
+  panel.innerHTML = `<h3>${tx.histTitle}</h3>`;
+  saved.forEach(e => {
+    const row = document.createElement('div');
+    row.className = 're';
+    row.innerHTML = `<span class="re-meta">${e.date} · ${e.lang}</span><span class="re-score">${e.pct} (${e.domain0} / ${e.domain1})</span>`;
+    panel.appendChild(row);
+  });
+  wrap.appendChild(panel);
+}
+
+// ════════════════════════════════════════════════
+// RESET
+// ════════════════════════════════════════════════
+function postResetQuiz() {
+  postUserAnswers = new Array(10).fill(null);
+  switchScreen('scr-post');
+  window.scrollTo(0, 0);
+  document.documentElement.scrollTop = 0;
+  postRenderAll();
+}
+
+// ════════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════════
+
+
 // ═══════════════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════════════
+
+const API_ENDPOINT = 'https://ciberseguridad-func.azurewebsites.net/api/saveresult';
+const POST_STORAGE_KEY = 'cyberpost_results';
+
+async function sendToServer(payload) {
+  try {
+    const res = await fetch(API_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    return res.ok;
+  } catch (e) {
+    return false;
+  }
+}
+
+// Session ID — liga la herramienta adaptativa con el post-cuestionario
+const SESSION_ID = crypto.randomUUID ? crypto.randomUUID() : (Date.now().toString(36) + Math.random().toString(36).slice(2));
+
+// Post-cuestionario state
+let postUserAnswers = new Array(10).fill(null);
+let _postLastResult = null;
+
+function goToPost() {
+  postUserAnswers = new Array(10).fill(null);
+  _postLastResult = null;
+  switchScreen('scr-post');
+  postRenderAll();
+}
+
+function restartEverything() {
+  switchScreen('scr-welcome');
+  restart();
+}
+
+// Override postSelectAnswer to use correct onclick in HTML
+function postSelectAnswer(qi, oi) {
+  postUserAnswers[qi] = oi;
+  const wrap = document.getElementById('post-qopts-' + qi);
+  wrap.querySelectorAll('.post-opt').forEach((o, i) => o.classList.toggle('selected', i === oi));
+  postUpdateProgress();
+}
+
 renderHeader();
 renderWelcome();
 </script>
