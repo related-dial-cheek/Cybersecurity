@@ -16,6 +16,6 @@
   },
   "navigationFallback": {
     "rewrite": "/index.html",
-    "exclude": ["/api/*"]
+    "exclude": ["/api/*", "/post_cuestionario.html"]
   }
 }
