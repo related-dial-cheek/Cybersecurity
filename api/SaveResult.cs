@@ -16,7 +16,7 @@ public class SaveResult
 
     [Function("SaveResult")]
     public async Task<HttpResponseData> Run(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "post", "options", Route = "save")] HttpRequestData req)
+        [HttpTrigger(AuthorizationLevel.Anonymous, "post", "options", Route = null)] HttpRequestData req)
     {
         // Manejar preflight CORS
         if (req.Method.ToUpper() == "OPTIONS")
