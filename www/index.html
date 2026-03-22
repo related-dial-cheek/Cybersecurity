@@ -246,16 +246,26 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
   <!-- RESULTS -->
   <div class="screen" id="scr-results">
     <div class="completion-big">
-      <div class="ci">🎯</div>
+      <div style="font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:.09em;color:var(--text2);margin-bottom:10px" id="r-part-label"></div>
       <h2 id="r-title"></h2>
       <p id="r-sub"></p>
-      <button class="btn btn-primary" onclick="goToPost()" id="r-continue-post"></button>
-      <button class="btn" onclick="restart()" id="r-restart"></button>
+      <button class="btn btn-primary" style="width:100%;max-width:360px;padding:13px 32px;font-size:15px" onclick="goToPost()" id="r-continue-post"></button>
     </div>
-    <div id="r-domains"></div>
-    <div id="r-recs"></div>
-    <div id="save-wrap"></div>
+    <div style="border-top:1px solid var(--border);padding-top:14px;margin-top:4px">
+      <div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:4px 0" onclick="var d=document.getElementById('r-detail');d.style.display=d.style.display==='none'?'block':'none';var c=document.getElementById('r-chevron');c.textContent=d.style.display==='none'?'▸':'▾'">
+        <span style="font-size:13px;color:var(--text2);font-weight:500" id="r-detail-label"></span>
+        <span id="r-chevron" style="font-size:12px;color:var(--text3)">▸</span>
+      </div>
+      <div id="r-detail" style="display:none;margin-top:12px">
+        <div id="r-domains"></div>
+        <div id="r-recs"></div>
+      </div>
+    </div>
+    <div id="save-wrap" style="margin-top:16px"></div>
     <div id="hist-wrap"></div>
+    <div style="margin-top:12px">
+      <button class="btn" style="font-size:12px;color:var(--text3);border-color:transparent" onclick="restart()" id="r-restart"></button>
+    </div>
   </div>
 
   <!-- POST-CUESTIONARIO -->
@@ -312,7 +322,7 @@ es:{
     {icon:'01',text:'Se presenta una situación cotidiana y cuatro posibles respuestas.'},
     {icon:'02',text:'Cada respuesta incluye una explicación del razonamiento detrás de ella.'},
     {icon:'03',text:'La siguiente situación se selecciona según la respuesta elegida — el recorrido es personal y puede variar.'},
-    {icon:'04',text:'Al finalizar se presenta un perfil de resultado por sub-tema con orientación personalizada.'},
+    {icon:'04',text:'Al terminar los módulos, se presenta una evaluación breve de 10 preguntas para medir lo aprendido.'},
   ],
   domains:['Contraseñas y Autenticación','Respaldos y Archivos'],
   domainIcons:['🔑','💾'],
@@ -324,9 +334,11 @@ es:{
   contBtn:'Continuar →',
   badges:{optimal:'Óptimo',good:'Bueno',developing:'En desarrollo'},
   badgeDesc:{optimal:'Abordaste el sub-tema con solidez.',good:'Alcanzaste la respuesta más segura tras una situación de refuerzo.',developing:'Este sub-tema se identificó como área de oportunidad.'},
-  rTitle:'Módulos completados',
-  rSub:'Aquí está tu perfil de resultado por sub-tema.',
-  rRestart:'Volver a empezar',
+  rTitle:'Parte 1 de 2 lista',
+  rSub:'Completaste los módulos de aprendizaje. Ahora sigue una evaluación breve de 10 preguntas para medir lo que aprendiste.',
+  rPartLabel:'Módulos completados',
+  rDetailLabel:'Ver detalle de resultados',
+  rRestart:'Volver a empezar desde el inicio',
   rDomainLabel:'Resultado por sub-tema',
   rRecTitle:'Dónde enfocarte',
   rRecSub:'Solo para los sub-temas donde hubo más dificultad:',
@@ -349,7 +361,7 @@ en:{
     {icon:'01',text:'A real-life situation is presented along with four possible responses.'},
     {icon:'02',text:'Each response includes an explanation of the reasoning behind it.'},
     {icon:'03',text:'The next situation is selected based on the chosen response — the path is personal and may vary.'},
-    {icon:'04',text:'At the end, a result profile is shown by sub-topic with personalized guidance.'},
+    {icon:'04',text:'After the modules, a brief 10-question assessment measures what you learned.'},
   ],
   domains:['Passwords & Authentication','Backups & Files'],
   domainIcons:['🔑','💾'],
@@ -361,9 +373,11 @@ en:{
   contBtn:'Continue →',
   badges:{optimal:'Optimal',good:'Good',developing:'Developing'},
   badgeDesc:{optimal:'You approached this sub-topic with confidence.',good:'You reached the most secure response after one reinforcement situation.',developing:'This sub-topic was identified as an opportunity area.'},
-  rTitle:'Modules completed',
-  rSub:'Here is your result profile by sub-topic.',
-  rRestart:'Start over',
+  rTitle:'Part 1 of 2 done',
+  rSub:'You completed the learning modules. Now comes a brief 10-question assessment to measure what you learned.',
+  rPartLabel:'Modules completed',
+  rDetailLabel:'View result detail',
+  rRestart:'Start over from the beginning',
   rDomainLabel:'Result by sub-topic',
   rRecTitle:'Where to focus',
   rRecSub:'Only for the sub-topics where you had more difficulty:',
@@ -1593,12 +1607,17 @@ function renderWelcome() {
   document.getElementById('hd-sub').textContent = tx.sub;
   document.getElementById('w-how-title').textContent = tx.howTitle;
   document.getElementById('w-start').textContent = tx.wStart;
-  document.getElementById('w-duration').textContent = tx.duration || (lang === 'es' ? 'Duración estimada: 10–20 min' : 'Estimated duration: 10–20 min');
+  document.getElementById('w-duration').textContent = tx.duration || (lang === 'es' ? 'Duración estimada: 15–25 min' : 'Estimated duration: 15–25 min');
   const cards = document.getElementById('w-dom-cards');
   cards.innerHTML = '';
+  const partLabel = lang === 'es' ? 'Parte 1' : 'Part 1';
+  const part2Label = lang === 'es' ? 'Parte 2' : 'Part 2';
+  const part2Name = lang === 'es' ? 'Evaluación breve' : 'Brief assessment';
+  const part2Meta = lang === 'es' ? '10 preguntas al finalizar' : '10 questions at the end';
   tx.domains.forEach((name, di) => {
-    cards.innerHTML += `<div class="dom-card"><div class="dom-card-icon">${tx.domainIcons[di]}</div><div class="dom-card-name">${name}</div><div class="dom-card-meta">${tx.domainMeta ? tx.domainMeta[di] : (lang==='es'?'4 sub-temas · hasta 12 situaciones':'4 sub-topics · up to 12 situations')}</div></div>`;
+    if (di === 0) cards.innerHTML += `<div class="dom-card" style="grid-column:1/-1"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span style="background:var(--surface2);border-radius:6px;padding:2px 8px;font-size:11px;font-weight:500;color:var(--text2)">${partLabel}</span></div><div style="display:flex;gap:16px;align-items:center"><div style="font-size:20px">${tx.domainIcons[0]} ${tx.domainIcons[1]}</div><div><div class="dom-card-name">${lang==='es'?'Módulos de aprendizaje':'Learning modules'}</div><div class="dom-card-meta">${lang==='es'?'2 módulos · 4 sub-temas cada uno':'2 modules · 4 sub-topics each'}</div></div></div></div>`;
   });
+  cards.innerHTML += `<div class="dom-card" style="grid-column:1/-1"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span style="background:var(--surface2);border-radius:6px;padding:2px 8px;font-size:11px;font-weight:500;color:var(--text2)">${part2Label}</span></div><div style="display:flex;gap:16px;align-items:center"><div style="font-size:20px">📋</div><div><div class="dom-card-name">${part2Name}</div><div class="dom-card-meta">${part2Meta}</div></div></div></div>`;
   const rows = document.getElementById('w-how-rows');
   rows.innerHTML = '';
   tx.howRows.forEach(r => {
@@ -1804,6 +1823,8 @@ function showResults() {
   document.getElementById('r-sub').textContent = tx.rSub;
   document.getElementById('r-restart').textContent = tx.rRestart;
   document.getElementById('r-continue-post').textContent = tx.continueToPost;
+  document.getElementById('r-part-label').textContent = tx.rPartLabel || '';
+  document.getElementById('r-detail-label').textContent = tx.rDetailLabel || '';
 
   // Envío automático al servidor — silencioso
   const autoPayload = {
